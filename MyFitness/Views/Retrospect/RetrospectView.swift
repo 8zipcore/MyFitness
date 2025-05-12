@@ -10,7 +10,11 @@ import SwiftUI
 struct Retrospect: View {
     @State private var anaerobics: [Anaerobic] = []
     @State private var cardios: [Cardio] = []
-    @State private var cnt: Int = 0
+    @State private var satisfaction: Int = 0
+    @State private var startTime: Date = .now
+    @State private var endTime: Date = .now
+    @State private var writing: String = ""
+
     var body: some View {
         Form {
             Section("무산소 운동") {
@@ -29,7 +33,6 @@ struct Retrospect: View {
                     Label("추가", systemImage: "plus")
                 }
             }
-
             Section("유산소 운동") {
                 List {
                     ForEach($cardios) { $cardio in
@@ -45,9 +48,46 @@ struct Retrospect: View {
                     Label("추가", systemImage: "plus")
                 }
             }
+            Section("성취도") {
+                HStack {
+                    Text("금일 운동은 어땠나요?")
+                    Spacer()
+                    Picker("", selection: $satisfaction) {
+                        ForEach(Array(stride(from: 0, through: 100, by: 10)), id: \.self) { number in
+                            Text("\(number)%")
+                        }
+                    }
+                }
+            }
+
+            Section("운동 시간") {
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("시작 시간")
+                        Spacer()
+                        DatePicker("시간 선택", selection: $startTime, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.graphical) // 또는 .compact, .graphical
+                            .labelsHidden()
+                            .frame(width: 200, height: 30)
+                    }
+                    Divider()
+                    HStack {
+                        Text("종료 시간")
+                        Spacer()
+                        DatePicker("시간 선택", selection: $endTime, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.graphical) // 또는 .compact, .graphical
+                            .labelsHidden()
+                            .frame(width: 200, height: 30)
+                    }
+
+                }
+            }
+
+            Section("회고") {
+                TextEditor(text: $writing)
+                    .frame(minHeight: 150)
+            }
         }
-        .navigationTitle("운동 기록")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -57,6 +97,9 @@ struct Retrospect: View {
                 }
             }
         }
+        .navigationTitle("운동 기록")
+        .navigationBarTitleDisplayMode(.inline)
+
     }
 
 }
