@@ -7,16 +7,45 @@
 
 import SwiftUI
 
-struct Retrospect: View {
+struct RetrospectView: View {
+
+    @Environment(\.modelContext) var context
+
+    // MARK: retrospect가 nil이면 생성, 존재한다면 수정 로직을 진행합니다.
+    var retrospect: Restospect?
+
     @State private var anaerobics: [Anaerobic] = []
     @State private var cardios: [Cardio] = []
     @State private var satisfaction: Int = 0
     @State private var startTime: Date = .now
     @State private var endTime: Date = .now
     @State private var writing: String = ""
+    @State private var categoryList: [Category] = [.arm, .back, .leg, .cardio, .chest]
+    @State private var selectedCategoryList: [Category] = []
 
     var body: some View {
         Form {
+            Section("카테고리") {
+                List($categoryList, id: \.self) { category in
+                    HStack {
+                        Text(category.wrappedValue.rawValue)
+                        Spacer()
+                        if selectedCategoryList.contains(category.wrappedValue) {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(.blue)
+                        }
+                    }
+                    .contentShape(Rectangle()) // 제스쳐 범위 늘리기
+                    .onTapGesture {
+                        if selectedCategoryList.contains(category.wrappedValue) {
+                            selectedCategoryList = selectedCategoryList.filter { $0 != category.wrappedValue }
+                        } else {
+                            selectedCategoryList.append(category.wrappedValue)
+                        }
+                    }
+                }
+            }
+
             Section("무산소 운동") {
                 List {
                     ForEach($anaerobics) { $anaerobic in
@@ -99,9 +128,7 @@ struct Retrospect: View {
         }
         .navigationTitle("운동 기록")
         .navigationBarTitleDisplayMode(.inline)
-
     }
-
 }
 
 // MARK: 무산소 View
@@ -167,27 +194,8 @@ struct CardioView: View {
     }
 }
 
-struct CustomButton: View {
-    var body: some View {
-        Button {
-
-        } label: {
-            Text("하체")
-                .padding(.horizontal, 10)
-                .padding(.vertical, 2)
-                .tint(.black)
-                .font(.callout)
-                .background {
-                    RoundedRectangle(cornerRadius: 7)
-                        .fill(.gray.opacity(0.2))
-                }
-        }
-        .padding(.trailing, 7)
-    }
-}
-
 #Preview {
     NavigationStack {
-        Retrospect()
+        RetrospectView()
     }
 }
