@@ -7,10 +7,10 @@
 
 import Foundation
 import SwiftData
-
+/// 회고 데이터를 관리하는 ViewModel입니다.
 class RetrospectViewModel: ObservableObject {
     
-    /// Retrospect에 포함된 운동관련 데이터를 WorkoutItem으로 변환
+    /// Retrospect에 포함된 운동관련 데이터를 WorkoutItem으로 변환하는 함수입니다.
     func converToWorkoutItems(from retrospect: Retrospect) -> [WorkoutItem] {
         var workoutItems: [WorkoutItem] = []
         
