@@ -1,0 +1,98 @@
+//
+//  SearchViewModel.swift
+//  MyFitness
+//
+//  Created by 하재준 on 5/13/25.
+//
+
+import Foundation
+import SwiftData
+
+final class SearchViewModel: ObservableObject {
+    
+    @Published var keyword: String = ""
+    @Published var selectedCategories: Set<Category> = []
+    @Published var showOnlyBookmarks: Bool
+    @Published var selectedSort: SortOption = .dateDesc
+    @Published var retrospects: [Retrospect] = []
+
+    private var context: ModelContext
+
+    init(context: ModelContext) {
+        self.keyword = ""
+        self.selectedCategories = []
+        self.showOnlyBookmarks = false
+        self.selectedSort = .dateDesc
+        self.retrospects = []
+        self.context = context
+        
+    }
+
+    
+
+    /// 필터링 해서 표시해줄 배열입니다
+    private var filteredRetrospects: [Retrospect] {
+        let filtered = retrospects.filter { restro in
+            /// 검색 키워드
+            let matchesKeyword = keyword.isEmpty || restro.writing.lowercased().contains(keyword.lowercased())
+            /// 카테고리
+            let matchesCategory = selectedCategories.isEmpty || selectedCategories.contains {
+                restro.category.contains($0)
+            }
+            /// 북마크
+            let matchesBookmark = !showOnlyBookmarks || restro.bookMark
+            
+            return matchesKeyword && matchesCategory && matchesBookmark
+        }
+        
+        return filtered
+    }
+    
+    /// 리스트를 sort 해서 표시해줄 배열입니다.
+    var sortedAndFiltered: [Retrospect] {
+        let list = filteredRetrospects
+        switch selectedSort {
+        case .dateDesc:
+            return list.sorted { $0.date > $1.date }
+        case .dateAsc:
+            return list.sorted { $0.date < $1.date }
+        case .satisfactionDesc:
+            return list.sorted { $0.satisfaction > $1.satisfaction }
+        case .satisfactionAsc:
+            return list.sorted { $0.satisfaction < $1.satisfaction }
+        case .weightDesc:
+            return list.sorted { maxWeight($0) > maxWeight($1) }
+        case .weightAsc:
+            return list.sorted { maxWeight($0) < maxWeight($1) }
+        }
+    }
+
+    /// 북마크 토글입니다
+    func toggleBookmark(_ item: Retrospect) {
+        item.bookMark.toggle()
+        try? context.save()
+    }
+
+    /// 회고록 삭제입니다
+    func delete(_ item: Retrospect) {
+        context.delete(item)
+        try? context.save()
+    }
+
+    
+    /// 최대 무게를 리턴합니다
+    private func maxWeight(_ restro: Retrospect) -> Int {
+        restro.anaerobics.map { $0.weight }.max() ?? 0
+    }
+
+    /// 정렬에 쓰이는 요소들 열거입니다
+    enum SortOption: String, CaseIterable, Identifiable {
+        case dateDesc = "최신 순"
+        case dateAsc = "오래된 순"
+        case satisfactionDesc = "만족도 높은 순"
+        case satisfactionAsc = "만족도 낮은 순"
+        case weightDesc = "무게 높은 순"
+        case weightAsc = "무게 낮은 순"
+        var id: String { rawValue }
+    }
+}
