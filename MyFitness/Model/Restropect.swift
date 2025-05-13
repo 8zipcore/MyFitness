@@ -13,18 +13,18 @@ import SwiftData
 final class Retrospect {
     @Attribute(.unique) var id: UUID
     var date: Date
-    var category: [Category] // MARK: Category로 변경
+    var category: [Category]
 
-    @Relationship(deleteRule: .cascade, inverse: \Anaerobic.retrospect)
+    @Relationship(deleteRule: .cascade)
     var anaerobics: [Anaerobic]
 
-    @Relationship(deleteRule: .cascade, inverse: \Anaerobic.retrospect)
+    @Relationship(deleteRule: .cascade)
     var cardios: [Cardio]
 
-    var startTime: Date // MARK: 변경
-    var finishTime: Date // MARK: 변경
+    var startTime: Date
+    var finishTime: Date
     var satisfaction: Double
-    var writing: String // TODO: 이름이 애매함.
+    var writing: String
     var bookMark: Bool = false
 
     init(
@@ -56,8 +56,6 @@ final class Retrospect {
 @Model
 final class Anaerobic {
     @Attribute(.unique) var id: UUID
-
-    var retrospect: Retrospect?
     var exercise: Exercise
     var weight: Int
     var count: Int
@@ -76,8 +74,6 @@ final class Anaerobic {
 @Model
 final class Cardio {
     @Attribute(.unique) var id: UUID
-
-    var retrospect: Retrospect?
     var exercise: Exercise
     var minutes: Int
 
