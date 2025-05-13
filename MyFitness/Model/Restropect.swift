@@ -23,7 +23,7 @@ final class Retrospect {
 
     var startTime: Date
     var finishTime: Date
-    var satisfaction: Double
+    var satisfaction: Int
     var writing: String
     var bookMark: Bool = false
 
@@ -35,7 +35,7 @@ final class Retrospect {
         cardios: [Cardio],
         startTime: Date,
         finishTime: Date,
-        satisfaction: Double,
+        satisfaction: Int,
         writing: String,
         bookMark: Bool
     ) {
