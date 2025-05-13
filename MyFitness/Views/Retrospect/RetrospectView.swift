@@ -10,6 +10,8 @@ import SwiftData
 
 final class RetrospectWriteViewModel: ObservableObject {
     @Published var retrospect: Retrospect
+    @Published var isInvalidDate: Bool = false
+    @Published var isInvalidExercise: Bool = false
 
     /// 최초 생성시에 사용되는 생성자입니다.
     convenience init() {
@@ -41,7 +43,7 @@ final class RetrospectWriteViewModel: ObservableObject {
         let startDate = formatter.string(from: retrospect.startTime)
         let finishDate = formatter.string(from: retrospect.finishTime)
 
-        if ((startDate == "오후" && finishDate == "오전") && !isValidTime()) { // startDate가 finishDate보다 큰 경우에만 발생해야 함.
+        if ((startDate == "오후" && finishDate == "오전") && !isValidDate()) { // startDate가 finishDate보다 큰 경우에만 발생해야 함.
             if let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: retrospect.finishTime) {
                 retrospect.finishTime = tomorrow
             }
@@ -49,7 +51,7 @@ final class RetrospectWriteViewModel: ObservableObject {
     }
 
     /// 날짜 차이에 따라서 Bool값을 반환합니다.
-    func isValidTime() -> Bool {
+    func isValidDate() -> Bool {
         return retrospect.startTime <= retrospect.finishTime
     }
 
@@ -65,11 +67,13 @@ final class RetrospectWriteViewModel: ObservableObject {
 
         return true
     }
-}
 
-// MVVM -> 프로퍼티 -> 생성자 -> 메소드
-// Environment -> ViewModel -> Query -> State -> 일반 프로퍼티
-// 주석 어디까지 달면 좋을까?
+    /// 명시적으로 데이터를 저장합니다.
+    /// - Parameter context: DB를 조작할 수 있는 객체입니다.
+    func save(context: ModelContext) {
+        try? context.save()
+    }
+}
 
 struct RetrospectView: View {
     // MARK: SwiftData Context
@@ -81,19 +85,19 @@ struct RetrospectView: View {
     @FocusState private var isFocused: Bool
 
     let isCreate: Bool
-    
+
     /// RetrospectView 생성자
     /// - Parameters:
     ///   - isCreated: 최초 생성인지 수정인지 Bool값으로 받습니다.
     ///   - retrospect: 만약 수정이라면 회고 데이터를 전달받습니다.
-    init(isCreated: Bool, retrospect: Retrospect? = nil) {
+    init(isCreate: Bool, retrospect: Retrospect? = nil) {
         if let retrospect = retrospect {
             _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel(retrospect: retrospect))
         } else {
             _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel())
         }
 
-        self.isCreate = isCreated
+        self.isCreate = isCreate
     }
 
     var body: some View {
@@ -130,7 +134,7 @@ struct RetrospectView: View {
                 }
 
                 Button {
-                    viewModel.retrospect.anaerobics.append(Anaerobic(exercise: Exercise(name: ""), weight: 0, count: 0, set: 0))
+                    viewModel.retrospect.anaerobics.append(Anaerobic.emptyData())
                 } label: {
                     Label("추가", systemImage: "plus")
                 }
@@ -146,7 +150,7 @@ struct RetrospectView: View {
                     }
                 }
                 Button {
-                    viewModel.retrospect.cardios.append(Cardio(exercise: Exercise(name: ""), minutes: 0))
+                    viewModel.retrospect.cardios.append(Cardio.emptyData())
                 } label: {
                     Label("추가", systemImage: "plus")
                 }
@@ -159,8 +163,6 @@ struct RetrospectView: View {
                             Spacer()
                             Text("\(Int(viewModel.retrospect.satisfaction))%")
                         }
-
-                        // TODO: Slider 구현
                     }
                 }
             }
@@ -190,6 +192,8 @@ struct RetrospectView: View {
             }
             Section("회고") {
                 TextEditor(text: $viewModel.retrospect.writing)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
                     .focused($isFocused)
                     .frame(minHeight: 150)
                     .overlay {
@@ -200,31 +204,41 @@ struct RetrospectView: View {
                     }
             }
         }
+        .alert("경고", isPresented: $viewModel.isInvalidDate) {
+            Button("확인") {
+
+            }
+        } message: {
+            Text("운동 시간이 잘못 입력되었습니다.")
+        }
+        .alert("경고", isPresented: $viewModel.isInvalidExercise) {
+            Button("확인") {
+
+            }
+        } message: {
+            Text("선택되지 않는 운동이 존재합니다.")
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     viewModel.checkPMtoAMTime()
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-                    dateFormatter.locale = Locale(identifier: "ko_kr")
-                    print(dateFormatter.string(from: viewModel.retrospect.startTime))
-                    print(dateFormatter.string(from: viewModel.retrospect.finishTime))
 
-                    guard viewModel.isValidTime() else {
-                        print("검증1")
+                    guard viewModel.isValidDate() else {
+                        viewModel.isInvalidDate = true
                         return
                     }
 
                     guard viewModel.isValidExercise() else {
-                        print("검증2")
+                        viewModel.isInvalidExercise = true
                         return
                     }
 
                     if isCreate {
-						// TODO: 생성 DB 추가
-                    } else {
-						// TODO: 생성 DB 수정
+						// MARK: Retrospect 데이터 Create
+                        context.insert(viewModel.retrospect)
                     }
+
+                    viewModel.save(context: context)
                 } label: {
                     Text(isCreate == true ? "저장" : "수정")
                 }
@@ -235,7 +249,7 @@ struct RetrospectView: View {
     }
 }
 
-// MARK: 무산소 View
+/// 무산소 운동을 추가할 때 나타나는 화면
 struct AnaerobicView: View {
     @Binding var anaerobic: Anaerobic
     @State private var showSearchView: Bool = false
@@ -290,7 +304,7 @@ struct AnaerobicView: View {
     }
 }
 
-// MARK: 유산소 View
+/// 유산소 운동을 추가할 때 나타나는 화면
 struct CardioView: View {
     @Binding var cardio: Cardio
     @State private var showSearchView: Bool = false
@@ -319,7 +333,8 @@ struct CardioView: View {
     }
 }
 
-// MARK: 운동 검색 View
+
+/// 유저가 세부 운동을 검색할 수 있는 화면
 struct SearchExerciseView: View {
     @Query(sort: [SortDescriptor(\Exercise.name, order: .forward)])
     var exercises: [Exercise]
@@ -365,6 +380,7 @@ struct SearchExerciseView: View {
     }
 }
 
+/// 유저가 직접 운동을 추가할 수 있는 화면
 struct addCustomExerciseView: View {
     @State private var exerciseLabel: String = ""
     @Environment(\.modelContext) var context
@@ -388,13 +404,13 @@ struct addCustomExerciseView: View {
 // MARK: - Preview
 #Preview("수정 화면") {
     NavigationStack {
-        RetrospectView(isCreated: false, retrospect: Retrospect(date: .now, category: [.arms], anaerobics: [Anaerobic(exercise: Exercise(name: "데드 리프트"), weight: 65, count: 10, set: 5)], cardios: [Cardio(exercise: Exercise(name: "런닝머신"), minutes: 30)], startTime: .now, finishTime: .now, satisfaction: 50.0, writing: "감사합니다", bookMark: false))
+        RetrospectView(isCreate: false, retrospect: Retrospect(date: .now, category: [.arms], anaerobics: [Anaerobic(exercise: Exercise(name: "데드 리프트"), weight: 65, count: 10, set: 5)], cardios: [Cardio(exercise: Exercise(name: "런닝머신"), minutes: 30)], startTime: .now, finishTime: .now, satisfaction: 50.0, writing: "감사합니다", bookMark: false))
     }
 }
 
 #Preview("생성 화면") {
     NavigationStack {
-        RetrospectView(isCreated: true)
+        RetrospectView(isCreate: true)
     }
 }
 
