@@ -11,17 +11,18 @@ struct CommentsItemView: View {
     
     let date: String
     let comments: String
+    let textColor: Color
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(date)
                 .font(.headline)
                 .fontWeight(.semibold)
-                .foregroundStyle(.black)
+                .foregroundStyle(textColor)
             
             Text(comments)
                 .font(.subheadline)
-                .foregroundStyle(.black)
+                .foregroundStyle(textColor)
                 .padding(.top, 10)
             
             Spacer()
@@ -32,5 +33,5 @@ struct CommentsItemView: View {
 }
 
 #Preview {
-    CommentsItemView(date: Date.now.toString(), comments: "오늘의 한줄평")
+    CommentsItemView(date: Date.now.toString(), comments: "오늘의 한줄평", textColor: .black)
 }

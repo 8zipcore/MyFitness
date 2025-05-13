@@ -6,29 +6,52 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CalendarView: View {
+    @Environment(\.colorScheme) private var colorScheme
     
-    @StateObject var vm: CalendarViewModel
+    @ObservedObject var calendarVM: CalendarViewModel
+    
+    @Query
+    var retrospects: [Retrospect] = []
     
     @State private var selection = 1
     @State private var showDatePicker = false
     
-    @Environment(\.colorScheme) private var colorScheme
+    @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
+    @State private var selectedMonth: Int = Calendar.current.component(.month, from: Date())
+    
+    let writtenDates: [Date]
     
     var body: some View {
         let iconWidth: CGFloat = 8
         
-        let primaryColor: Color = colorScheme == .light ? .black : .white
+        let isLight = colorScheme == .light
+        let primaryColor: Color = isLight ? .black : .white
+        let datePickerBackgroundColor: Color = isLight ? .white : RGB(r: 28, g: 28, b: 30)
+        
+        let datePickerButtonImage = showDatePicker ? "chevron.right" : "chevron.down"
         
         VStack(spacing: 0) {
             HStack(spacing: 35) {
-                Text(vm.currentMonthDate.toYearMonthString())
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .onTapGesture {
-                        showDatePicker.toggle()
+                HStack {
+                    Text(calendarVM.currentMonthDate.toYearMonthString())
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(primaryColor)
+                    
+                    withAnimation {
+                        Image(systemName: datePickerButtonImage)
+                            .resizable()
+                            .scaledToFit()
+                            .tint(primaryColor)
+                            .frame(width: 13, height: 13)
                     }
+                }
+                .onTapGesture {
+                    showDatePicker.toggle()
+                }
                 
                 Spacer()
                 
@@ -59,40 +82,71 @@ struct CalendarView: View {
             .padding(.vertical, 20)
             .padding(.horizontal, 5)
             
-            HStack {
-                ForEach(vm.weekdays, id:\.self) { weekday in
-                    Text(weekday)
-                        .font(.subheadline)
-                        .foregroundStyle(.gray)
+            VStack(spacing: 0) {
+                HStack {
+                    ForEach(calendarVM.weekdays, id:\.self) { weekday in
+                        Text(weekday)
+                            .font(.subheadline)
+                            .foregroundStyle(.gray)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
-            }
-            .padding(.vertical, 5)
-            
-            TabView(selection: $selection) {
-                ForEach(vm.months.indices, id: \.self) { index in
-                    CalendarGridView(
-                        vm: vm,
-                        days: vm.months[index],
-                        writtenDates: [],
-                        primaryColor: primaryColor
-                    )
-                    .tag(index)
-                    .onDisappear {
-                        if selection == 0 {
-                            vm.changeMonth(by: .previos)
+                .padding(.vertical, 5)
+                
+                TabView(selection: $selection) {
+                    ForEach(calendarVM.months.indices, id: \.self) { index in
+                        CalendarGridView(
+                            calendarVM: calendarVM,
+                            days: calendarVM.months[index],
+                            writtenDates: writtenDates,
+                            primaryColor: primaryColor
+                        )
+                        .tag(index)
+                        .onDisappear {
+                            if selection == 0 {
+                                calendarVM.changeMonth(by: .previos)
+                            }
+                            
+                            if selection == 2 {
+                                calendarVM.changeMonth(by: .next)
+                            }
+                            
+                            selection = 1
                         }
-                        
-                        if selection == 2 {
-                            vm.changeMonth(by: .next)
-                        }
-                        
-                        selection = 1
                     }
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .frame(height: 250)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: 180)
+            .overlay {
+                if showDatePicker {
+                    HStack(spacing: 0) {
+                        Picker("연도", selection: $selectedYear) {
+                            ForEach(Array(1900...2100), id: \.self) { year in
+                                Text("\(String(year)) 년")
+                                    .tag(year)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+
+                        Picker("월", selection: $selectedMonth) {
+                            ForEach(Array(1...23), id: \.self) { month in
+                                Text("\(month) 월")
+                                    .tag(month)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .pickerStyle(.wheel)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(datePickerBackgroundColor)
+                    )
+                    .onChange(of: selectedYear) { calendarVM.changeYear($0) }
+                    .onChange(of: selectedMonth) { calendarVM.changeMonth($0) }
+                }
+            }
         }
         .padding(.horizontal, 30)
     }
@@ -100,20 +154,21 @@ struct CalendarView: View {
 
 #Preview {
     let viewModel = CalendarViewModel()
-    CalendarView(vm: viewModel)
+    CalendarView(calendarVM: viewModel, writtenDates: [])
 }
 
 struct CalendarGridView: View {
     
-    @ObservedObject var vm: CalendarViewModel
+    @ObservedObject var calendarVM: CalendarViewModel
     let days: [Int]
     let writtenDates: [Date]
     var primaryColor: Color
     
     var body: some View {
         let circleColor: Color = RGB(r: 73, g: 70, b: 220)
-        let fontSize: CGFloat = days.count > 35 ? 15 : 16
-        let textWidth: CGFloat = days.count > 35 ? 20 : 30
+        let isMoreThanFiveWeeks = days.count > 35
+        let fontSize: CGFloat = isMoreThanFiveWeeks ? 15 : 16
+        let textWidth: CGFloat = isMoreThanFiveWeeks ? 33 : 40
         
         LazyVGrid(
             columns: Array(repeating: GridItem(.flexible()), count: 7)
@@ -121,8 +176,8 @@ struct CalendarGridView: View {
             ForEach(0..<days.count, id: \.self) { index in
                 let day = days[index]
                 let dayToString = day > 0 ? "\(days[index])" : ""
-                let isWritten = vm.didWriteRetrospect(on: day, writtenDates: writtenDates)
-                let textColor = !isWritten && vm.isToday(day) ? circleColor : primaryColor
+                let isWritten = calendarVM.didWriteRetrospect(on: day, writtenDates: writtenDates)
+                let textColor = !isWritten && calendarVM.isToday(day) ? circleColor : primaryColor
                 
                 Text(dayToString)
                     .font(.system(size: fontSize))
@@ -133,6 +188,9 @@ struct CalendarGridView: View {
                             .fill(isWritten ? circleColor : .clear)
                             .frame(maxWidth: .infinity)
                     )
+                    .onTapGesture {
+                        calendarVM.changeDay(day)
+                    }
                 
             }
         }
