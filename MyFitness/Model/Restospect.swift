@@ -14,8 +14,13 @@ final class Retrospect {
     @Attribute(.unique) var id: UUID
     var date: Date
     var category: [Category] // MARK: Category로 변경
+
+    @Relationship(deleteRule: .cascade, inverse: \Anaerobic.retrospect)
     var anaerobics: [Anaerobic]
+
+    @Relationship(deleteRule: .cascade, inverse: \Anaerobic.retrospect)
     var cardios: [Cardio]
+
     var startTime: Date // MARK: 변경
     var finishTime: Date // MARK: 변경
     var satisfaction: Double
@@ -51,6 +56,8 @@ final class Retrospect {
 @Model
 final class Anaerobic {
     @Attribute(.unique) var id: UUID
+
+    var retrospect: Retrospect?
     var exercise: Exercise
     var weight: Int
     var count: Int
@@ -69,6 +76,8 @@ final class Anaerobic {
 @Model
 final class Cardio {
     @Attribute(.unique) var id: UUID
+
+    var retrospect: Retrospect?
     var exercise: Exercise
     var minutes: Int
 
