@@ -14,7 +14,7 @@ struct RetrospectView: View {
 
     // MARK: retrospect가 nil이면 생성, 존재한다면 수정 로직을 진행합니다.
     var retrospect: Retrospect?
-
+    @FocusState private var isFocused: Bool
     @State private var anaerobics: [Anaerobic] = []
     @State private var cardios: [Cardio] = []
     @State private var satisfaction: Int = 0
@@ -80,13 +80,22 @@ struct RetrospectView: View {
             }
             Section("성취도") {
                 HStack {
-                    Text("금일 운동은 어땠나요?")
-                    Spacer()
-                    Picker("", selection: $satisfaction) {
-                        ForEach(Array(stride(from: 0, through: 100, by: 10)), id: \.self) { number in
-                            Text("\(number)%")
+                    VStack {
+                        HStack {
+                            Text("금일 운동은 어땠나요?")
+                            Spacer()
+                            Text("\(satisfaction)%")
                         }
+
+                        // TODO: Slider 구현
                     }
+//                    Text("금일 운동은 어땠나요?")
+//                    Spacer()
+//                    Picker("", selection: $satisfaction) {
+//                        ForEach(Array(stride(from: 0, through: 100, by: 10)), id: \.self) { number in
+//                            Text("\(number)%")
+//                        }
+//                    }
                 }
             }
 
@@ -115,16 +124,14 @@ struct RetrospectView: View {
 
             Section("회고") {
                 TextEditor(text: $writing)
+                    .focused($isFocused)
                     .frame(minHeight: 150)
-            }
-
-            Section {
-                HStack {
-                    Spacer()
-                    Text(retrospect == nil ? "저장" : "수정")
-                        .foregroundStyle(.blue)
-                    Spacer()
-                }
+                    .overlay {
+                        if !isFocused && writing.isEmpty {
+                            Text("금일 운동의 회고를 적어주세요!")
+                                .foregroundStyle(.gray)
+                        }
+                    }
             }
         }
         .toolbar {
@@ -290,17 +297,46 @@ struct SearchExerciseView: View {
 
     var body: some View {
         List {
+            Section {
+                addCustomExerciseView()
+            }
+
             ForEach(filteredExercise) { exercise in
                 Text(exercise.name)
                     .onTapGesture {
-                        print(exercise.name)
                         name = exercise.name
                         dismiss()
                     }
             }
+            .onDelete { indexSet in
+                // MARK: Exercise 데이터 Delete
+                for index in indexSet {
+                    context.delete(exercises[index])
+                }
+            }
         }
         .navigationTitle("운동 검색")
         .searchable(text: $keyword, prompt: "운동을 검색하세요")
+    }
+}
+
+struct addCustomExerciseView: View {
+    @State private var exerciseLabel: String = ""
+    @Environment(\.modelContext) var context
+
+    var body: some View {
+        HStack {
+            TextField("원하시는 운동을 추가 하세요", text: $exerciseLabel)
+            Spacer()
+            Button {
+                // MARK: Exercise 데이터 Insert
+                guard !exerciseLabel.isEmpty else { return }
+                let exercise = Exercise(name: exerciseLabel)
+                context.insert(exercise)
+            } label: {
+                Image(systemName: "plus")
+            }
+        }
     }
 }
 
