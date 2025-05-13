@@ -111,7 +111,7 @@ struct CalendarView: View {
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
-                .frame(height: 180)
+                .frame(height: 250)
             }
             .overlay {
                 if showDatePicker {
@@ -161,8 +161,9 @@ struct CalendarGridView: View {
     
     var body: some View {
         let circleColor: Color = RGB(r: 73, g: 70, b: 220)
-        let fontSize: CGFloat = days.count > 35 ? 15 : 16
-        let textWidth: CGFloat = days.count > 35 ? 20 : 30
+        let isMoreThanFiveWeeks = days.count > 35
+        let fontSize: CGFloat = isMoreThanFiveWeeks ? 15 : 16
+        let textWidth: CGFloat = isMoreThanFiveWeeks ? 33 : 40
         
         LazyVGrid(
             columns: Array(repeating: GridItem(.flexible()), count: 7)
@@ -182,6 +183,9 @@ struct CalendarGridView: View {
                             .fill(isWritten ? circleColor : .clear)
                             .frame(maxWidth: .infinity)
                     )
+                    .onTapGesture {
+                        vm.changeDay(day)
+                    }
                 
             }
         }

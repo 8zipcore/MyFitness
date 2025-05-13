@@ -10,6 +10,7 @@ import SwiftUI
 struct WorkoutItemView: View {
     
     let workoutItems: [WorkoutItem]
+    let textColor: Color
     
     var body: some View {
         VStack(spacing: 15) {
@@ -20,14 +21,14 @@ struct WorkoutItemView: View {
                     Text(workoutItem.title)
                         .font(.headline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(textColor)
                     
                     Spacer()
                     
                     Text(workoutItem.contents)
                         .font(.headline)
                         .fontWeight(.regular)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(textColor)
                 }
             }
         }
@@ -35,5 +36,5 @@ struct WorkoutItemView: View {
 }
 
 #Preview {
-    WorkoutItemView(workoutItems: [])
+    WorkoutItemView(workoutItems: [], textColor: .black)
 }

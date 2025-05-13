@@ -27,9 +27,14 @@ struct MainView: View {
         let circleWidth: CGFloat = 30
         let iconWidth: CGFloat = 17
         
-        let iconColor: Color = colorScheme == .light ? .black : .white
-        let backgroundColor: Color = colorScheme == .light ? RGB(r: 247, g: 247, b: 247) : .black
-        let toolBarBackgroundColor: Color = colorScheme == .light ? .black.opacity(0.1) : .white.opacity(0.2)
+        let isLight = colorScheme == .light
+        
+        let primaryColor: Color = isLight ? .black : .white
+        let backgroundColor: Color = isLight ? RGB(r: 247, g: 247, b: 247) : .black
+        let toolBarBackgroundColor: Color = isLight ? .black.opacity(0.1) : .white.opacity(0.2)
+        let itemViewBackgroundColor: Color = isLight ? .white : RGB(r: 28, g: 28, b: 30)
+        
+        let isRetrospectEmpty = retrospect == nil
         
         NavigationStack {
             ZStack {
@@ -43,22 +48,32 @@ struct MainView: View {
                                 WorkoutItem(title: "런지", contents: "40kg 3회 2세트"),
                                 WorkoutItem(title: "런지", contents: "40kg 3회 2세트"),
                                 WorkoutItem(title: "런지", contents: "40kg 3회 2세트"),
-                            ]
+                            ],
+                            textColor: primaryColor
                         )
                         
                         CommentsItemView(
                             date: calendarVM.selectedDate.toString(),
-                            comments: "오늘의 한줄평 입니다"
+                            comments: "오늘의 한줄평 입니다",
+                            textColor: primaryColor
                         )
                         
-                        if let retrospect = retrospect {
+                        if let retrospect = retrospect { // 운동 기록 있으면
                             WorkoutItemView(
-                                workoutItems: retrospectVM.converToWorkoutItems(from: retrospect)
+                                workoutItems: retrospectVM.converToWorkoutItems(from: retrospect),
+                                textColor: primaryColor
                             )
                             
                             CommentsItemView(
                                 date: calendarVM.selectedDate.toString(),
-                                comments: retrospect.writing
+                                comments: retrospect.writing,
+                                textColor: primaryColor
+                            )
+                        } else { // 운동 기록 없으면
+                            CommentsItemView(
+                                date: calendarVM.selectedDate.toString(),
+                                comments: "운동 기록을 추가해주세요.",
+                                textColor: primaryColor
                             )
                         }
                         
@@ -66,21 +81,21 @@ struct MainView: View {
                             Text("이번주 운동 횟수")
                                 .font(.headline)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(.black)
+                                .foregroundStyle(primaryColor)
                             
                             Spacer()
                             
                             Text("3회")
                                 .font(.headline)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(.black)
+                                .foregroundStyle(primaryColor)
                         }
                     }
                     .padding(.vertical, 20)
                     .padding(.horizontal, 20)
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(.white)
+                            .fill(itemViewBackgroundColor)
                     )
                     .padding(.top, 20)
                     .padding(.horizontal, 30)
@@ -88,20 +103,22 @@ struct MainView: View {
                     Spacer()
                         .frame(height: 130)
                 }
-                // 운동 기록 없으면
-                VStack {
-                    Spacer()
-                    
-                    HStack {
+                
+                if isRetrospectEmpty {
+                    VStack {
                         Spacer()
                         
-                        CircleButton(type: .plus) {
+                        HStack {
+                            Spacer()
                             
+                            CircleButton(type: .plus) {
+                                
+                            }
+                            .frame(width: 65, height: 65)
                         }
-                        .frame(width: 65, height: 65)
+                        .padding(.vertical, 20)
+                        .padding(.horizontal, 30)
                     }
-                    .padding(.vertical, 20)
-                    .padding(.horizontal, 30)
                 }
             }
             .scrollIndicators(.hidden)
@@ -119,7 +136,7 @@ struct MainView: View {
                                     Image(systemName: "chart.bar.fill")
                                         .resizable()
                                         .scaledToFit()
-                                        .foregroundStyle(iconColor)
+                                        .foregroundStyle(primaryColor)
                                         .frame(width: iconWidth)
                                 }
                         }
@@ -134,7 +151,7 @@ struct MainView: View {
                                     Image(systemName: "magnifyingglass")
                                         .resizable()
                                         .scaledToFit()
-                                        .foregroundStyle(iconColor)
+                                        .foregroundStyle(primaryColor)
                                         .frame(width: iconWidth)
                                 }
                         }

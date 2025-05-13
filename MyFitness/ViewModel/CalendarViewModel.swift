@@ -95,6 +95,15 @@ class CalendarViewModel: ObservableObject {
         months = [days(from: .previos), days(from: .current), days(from: .next)]
     }
     
+    func changeDay(_ day: Int) {
+        let currentYear = Calendar.current.component(.year, from: selectedDate)
+        let currentMonth = Calendar.current.component(.month, from: selectedDate)
+
+        if let newDate = Calendar.current.date(from: DateComponents(year: currentYear, month: currentMonth, day: day)) {
+            selectedDate = newDate
+        }
+    }
+    
     func changeMonth(by type: MonthType) {
         if let newMonth = Calendar.current.date(byAdding: .month, value: type.value, to: currentMonthDate) {
             self.currentMonthDate = newMonth
