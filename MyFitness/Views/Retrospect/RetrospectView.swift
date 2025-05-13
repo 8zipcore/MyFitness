@@ -6,21 +6,24 @@
 //
 
 import SwiftUI
+import SwiftData
+
+// 무산소 운동 ->
 
 struct RetrospectView: View {
-
+	// MARK: SwiftData Context
     @Environment(\.modelContext) var context
 
     // MARK: retrospect가 nil이면 생성, 존재한다면 수정 로직을 진행합니다.
-    var retrospect: Restospect?
+    var retrospect: Retrospect?
 
     @State private var anaerobics: [Anaerobic] = []
     @State private var cardios: [Cardio] = []
     @State private var satisfaction: Int = 0
     @State private var startTime: Date = .now
-    @State private var endTime: Date = .now
+    @State private var finishTime: Date = .now
     @State private var writing: String = ""
-    @State private var categoryList: [Category] = [.arm, .back, .leg, .cardio, .chest]
+    @State private var categoryList: [Category] = Category.allCases
     @State private var selectedCategoryList: [Category] = []
 
     var body: some View {
@@ -57,7 +60,7 @@ struct RetrospectView: View {
                 }
 
                 Button {
-                    anaerobics.append(Anaerobic(name: "", weight: 0, count: 0, set: 0))
+                    anaerobics.append(Anaerobic(exercise: Exercise(name: ""), weight: 0, count: 0, set: 0))
                 } label: {
                     Label("추가", systemImage: "plus")
                 }
@@ -72,7 +75,7 @@ struct RetrospectView: View {
                     }
                 }
                 Button {
-                    cardios.append(Cardio(name: "", minutes: 0))
+                    cardios.append(Cardio(exercise: Exercise(name: ""), minutes: 0))
                 } label: {
                     Label("추가", systemImage: "plus")
                 }
@@ -103,7 +106,7 @@ struct RetrospectView: View {
                     HStack {
                         Text("종료 시간")
                         Spacer()
-                        DatePicker("시간 선택", selection: $endTime, displayedComponents: .hourAndMinute)
+                        DatePicker("시간 선택", selection: $finishTime, displayedComponents: .hourAndMinute)
                             .datePickerStyle(.graphical) // 또는 .compact, .graphical
                             .labelsHidden()
                             .frame(width: 200, height: 30)
@@ -116,13 +119,47 @@ struct RetrospectView: View {
                 TextEditor(text: $writing)
                     .frame(minHeight: 150)
             }
+
+            Section {
+                HStack {
+                    Spacer()
+                    Text(retrospect == nil ? "저장" : "수정")
+                        .foregroundStyle(.blue)
+                    Spacer()
+                }
+            }
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    print(anaerobics.forEach { print($0.name) })
+                    // MARK: 저장할 때 운동 시간 검증을 해야 합니다.
+                    // MARK: 운동명을 기입했는지 검증을 해야 합니다.
+                    // MARK: nil로 선언할 수 있는게 필요한가?
+                    // MARK: 저장 및 수정을 분기해야 합니다.
+                    let retrospect = Retrospect(
+                        date: .now,
+                        category: selectedCategoryList,
+                        anaerobics: anaerobics,
+                        cardios: cardios,
+                        startTime: startTime,
+                        finishTime: finishTime,
+                        satisfaction: Double(satisfaction),
+                        writing: writing,
+                        bookMark: false
+                    )
+
+                    print(
+                        retrospect.category,
+                        retrospect.anaerobics,
+                        retrospect.cardios,
+                        retrospect.startTime,
+                        retrospect.finishTime,
+                        retrospect.satisfaction,
+                        retrospect.writing,
+                        retrospect.bookMark
+                    )
                 } label: {
-                    Text("저장")
+                    Text(retrospect == nil ? "저장" : "수정")
                 }
             }
         }
@@ -134,19 +171,25 @@ struct RetrospectView: View {
 // MARK: 무산소 View
 struct AnaerobicView: View {
     @Binding var anaerobic: Anaerobic
+    @State private var showSearchView: Bool = false
 
     var body: some View {
         VStack {
             HStack {
-                TextField("운동명", text: $anaerobic.name)
+                Text(anaerobic.exercise.name == "" ? "운동명" : anaerobic.exercise.name)
+                    .foregroundStyle(.gray)
                 Spacer()
+            }
+            .contentShape(Rectangle()) // 제스쳐 범위 늘리기
+            .onTapGesture {
+                showSearchView = true
             }
 
             Divider()
 
             HStack {
                 Picker("", selection: $anaerobic.weight) {
-                    ForEach(Array(stride(from: 0, to: 200, by: 5)), id: \.self) { number in
+                    ForEach(Array(stride(from: 0, through: 200, by: 5)), id: \.self) { number in
                         Text("\(number)")
                     }
                 }
@@ -157,6 +200,7 @@ struct AnaerobicView: View {
                     ForEach(0..<200, id: \.self) { number in
                         Text("\(number)")
                     }
+
                 }
 
                 Text("세트")
@@ -170,7 +214,11 @@ struct AnaerobicView: View {
 
                 Spacer()
             }
-            .pickerStyle(.menu)
+        }
+        .sheet(isPresented: $showSearchView) {
+            NavigationStack {
+                SearchExerciseView(name: $anaerobic.exercise.name)
+            }
         }
     }
 }
@@ -178,24 +226,96 @@ struct AnaerobicView: View {
 // MARK: 유산소 View
 struct CardioView: View {
     @Binding var cardio: Cardio
+    @State private var showSearchView: Bool = false
 
     var body: some View {
         HStack {
-            TextField("운동명", text: $cardio.name)
+            Text(cardio.exercise.name == "" ? "운동명" : cardio.exercise.name)
+                .foregroundStyle(.gray)
+                .onTapGesture {
+                    print("show")
+                    showSearchView = true
+                }
             Spacer()
             Picker("", selection: $cardio.minutes) {
                 ForEach(0..<200, id: \.self) { number in
                     Text("\(number)")
                 }
             }
-
             Text("분")
+        }
+        .sheet(isPresented: $showSearchView) {
+            NavigationStack {
+                SearchExerciseView(name: $cardio.exercise.name)
+            }
         }
     }
 }
 
+// MARK: 운동 검색 View
+struct SearchExerciseView: View {
+    @Query(sort: [SortDescriptor(\Exercise.name, order: .forward)])
+    var exercises: [Exercise]
+
+    @Environment(\.modelContext) var context
+    @Environment(\.dismiss) var dismiss
+
+    @State var keyword: String = ""
+    @Binding var name: String
+
+    var filteredExercise: [Exercise] {
+        if keyword.isEmpty {
+            return exercises
+        }
+
+        return exercises.filter {
+            $0.name.lowercased().contains(keyword.lowercased())
+        }
+    }
+
+    var body: some View {
+        List {
+            ForEach(filteredExercise) { exercise in
+                Text(exercise.name)
+                    .onTapGesture {
+                        print(exercise.name)
+                        name = exercise.name
+                        dismiss()
+                    }
+            }
+        }
+        .navigationTitle("운동 검색")
+        .searchable(text: $keyword, prompt: "운동을 검색하세요")
+    }
+}
+
+// MARK: - Preview
 #Preview {
     NavigationStack {
         RetrospectView()
     }
 }
+
+#Preview("SearchExerciseView") {
+    let container: ModelContainer = {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(for: Exercise.self, configurations: config)
+
+        let exercise1 = Exercise(name: "벤치 프레스")
+        let exercise2 = Exercise(name: "데드 리프트")
+        let exercise3 = Exercise(name: "스쿼트")
+
+        container.mainContext.insert(exercise1)
+        container.mainContext.insert(exercise2)
+        container.mainContext.insert(exercise3)
+
+        return container
+    }()
+
+    NavigationStack {
+        SearchExerciseView(name: .constant("테스트"))
+            .modelContainer(container)
+    }
+}
+
+
