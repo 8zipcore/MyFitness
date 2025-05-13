@@ -11,7 +11,7 @@ import SwiftData
 // 검색뷰
 struct SearchView: View {
     @Query(sort: [SortDescriptor(\Retrospect.date, order: .reverse)])
-    var restospects: [Retrospect]
+    var retrospects: [Retrospect]
     
     var exampleList: [Retrospect] = [
         
@@ -49,10 +49,10 @@ struct SearchView: View {
     @State private var selectedSort: SortOption = .dateDesc
     
     
-    //    @State private var restospects: [Restospect]
+    //    @State private var retrospects: [Retrospect]
     
     
-    private var filteredRestospect: [Retrospect] {
+    private var filteredRetrospect: [Retrospect] {
         let filtered = exampleList.filter { restro in
             let matchesKeyword = keyword.isEmpty || restro.writing.lowercased().contains(keyword.lowercased())
             
@@ -62,7 +62,7 @@ struct SearchView: View {
             return matchesKeyword && matchesCategory
         }
         
-        return sortedRestospects(filtered)
+        return sortedRetrospects(filtered)
     }
     
     var body: some View {
@@ -86,7 +86,7 @@ struct SearchView: View {
             .padding()
             
             List {
-                ForEach(filteredRestospect) { item in
+                ForEach(filteredRetrospect) { item in
                     NavigationLink {
                         // TODO: - 작성글로 이동
                     } label: {
@@ -131,7 +131,7 @@ struct SearchView: View {
         .padding(.horizontal)
     }
     
-    private func sortedRestospects(_ list: [Retrospect]) -> [Retrospect] {
+    private func sortedRetrospects(_ list: [Retrospect]) -> [Retrospect] {
         switch selectedSort {
         case .dateDesc:
             return list.sorted { $0.date > $1.date }
@@ -168,7 +168,7 @@ func formattedDate(_ date: Date) -> String {
 extension SearchView {
     func delete(_ indexSet: IndexSet) {
         for index in indexSet {
-            context.delete(filteredRestospect[index])
+            context.delete(filteredRetrospect[index])
         }
     }
 }
