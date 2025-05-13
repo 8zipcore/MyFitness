@@ -39,25 +39,9 @@ struct MainView: View {
         NavigationStack {
             ZStack {
                 ScrollView {
-                    CalendarView(vm: calendarVM)
+                    CalendarView(calendarVM: calendarVM, writtenDates: retrospectVM.writtenDates(from: retrospects))
                     
                     Group {
-                        WorkoutItemView(
-                            workoutItems: [
-                                WorkoutItem(title: "런지", contents: "40kg 3회 2세트"),
-                                WorkoutItem(title: "런지", contents: "40kg 3회 2세트"),
-                                WorkoutItem(title: "런지", contents: "40kg 3회 2세트"),
-                                WorkoutItem(title: "런지", contents: "40kg 3회 2세트"),
-                            ],
-                            textColor: primaryColor
-                        )
-                        
-                        CommentsItemView(
-                            date: calendarVM.selectedDate.toString(),
-                            comments: "오늘의 한줄평 입니다",
-                            textColor: primaryColor
-                        )
-                        
                         if let retrospect = retrospect { // 운동 기록 있으면
                             WorkoutItemView(
                                 workoutItems: retrospectVM.converToWorkoutItems(from: retrospect),

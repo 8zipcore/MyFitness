@@ -33,4 +33,8 @@ class RetrospectViewModel: ObservableObject {
         
         return workoutItems
     }
+    
+    func writtenDates(from retrospects: [Retrospect]) -> [Date] {
+        return retrospects.map { $0.date }
+    }
 }

@@ -6,10 +6,15 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CalendarView: View {
+    @Environment(\.colorScheme) private var colorScheme
     
-    @ObservedObject var vm: CalendarViewModel
+    @Query
+    var retrospects: [Retrospect] = []
+    
+    @ObservedObject var calendarVM: CalendarViewModel
     
     @State private var selection = 1
     @State private var showDatePicker = false
@@ -17,7 +22,7 @@ struct CalendarView: View {
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
     @State private var selectedMonth: Int = Calendar.current.component(.month, from: Date())
     
-    @Environment(\.colorScheme) private var colorScheme
+    let writtenDates: [Date]
     
     var body: some View {
         let iconWidth: CGFloat = 8
@@ -31,7 +36,7 @@ struct CalendarView: View {
         VStack(spacing: 0) {
             HStack(spacing: 35) {
                 HStack {
-                    Text(vm.currentMonthDate.toYearMonthString())
+                    Text(calendarVM.currentMonthDate.toYearMonthString())
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundStyle(primaryColor)
@@ -79,7 +84,7 @@ struct CalendarView: View {
             
             VStack(spacing: 0) {
                 HStack {
-                    ForEach(vm.weekdays, id:\.self) { weekday in
+                    ForEach(calendarVM.weekdays, id:\.self) { weekday in
                         Text(weekday)
                             .font(.subheadline)
                             .foregroundStyle(.gray)
@@ -89,21 +94,21 @@ struct CalendarView: View {
                 .padding(.vertical, 5)
                 
                 TabView(selection: $selection) {
-                    ForEach(vm.months.indices, id: \.self) { index in
+                    ForEach(calendarVM.months.indices, id: \.self) { index in
                         CalendarGridView(
-                            vm: vm,
-                            days: vm.months[index],
-                            writtenDates: [],
+                            calendarVM: calendarVM,
+                            days: calendarVM.months[index],
+                            writtenDates: writtenDates,
                             primaryColor: primaryColor
                         )
                         .tag(index)
                         .onDisappear {
                             if selection == 0 {
-                                vm.changeMonth(by: .previos)
+                                calendarVM.changeMonth(by: .previos)
                             }
                             
                             if selection == 2 {
-                                vm.changeMonth(by: .next)
+                                calendarVM.changeMonth(by: .next)
                             }
                             
                             selection = 1
@@ -138,8 +143,8 @@ struct CalendarView: View {
                         RoundedRectangle(cornerRadius: 10)
                             .fill(datePickerBackgroundColor)
                     )
-                    .onChange(of: selectedYear) { vm.changeYear($0) }
-                    .onChange(of: selectedMonth) { vm.changeMonth($0) }
+                    .onChange(of: selectedYear) { calendarVM.changeYear($0) }
+                    .onChange(of: selectedMonth) { calendarVM.changeMonth($0) }
                 }
             }
         }
@@ -149,12 +154,12 @@ struct CalendarView: View {
 
 #Preview {
     let viewModel = CalendarViewModel()
-    CalendarView(vm: viewModel)
+    CalendarView(calendarVM: viewModel, writtenDates: [])
 }
 
 struct CalendarGridView: View {
     
-    @ObservedObject var vm: CalendarViewModel
+    @ObservedObject var calendarVM: CalendarViewModel
     let days: [Int]
     let writtenDates: [Date]
     var primaryColor: Color
@@ -171,8 +176,8 @@ struct CalendarGridView: View {
             ForEach(0..<days.count, id: \.self) { index in
                 let day = days[index]
                 let dayToString = day > 0 ? "\(days[index])" : ""
-                let isWritten = vm.didWriteRetrospect(on: day, writtenDates: writtenDates)
-                let textColor = !isWritten && vm.isToday(day) ? circleColor : primaryColor
+                let isWritten = calendarVM.didWriteRetrospect(on: day, writtenDates: writtenDates)
+                let textColor = !isWritten && calendarVM.isToday(day) ? circleColor : primaryColor
                 
                 Text(dayToString)
                     .font(.system(size: fontSize))
@@ -184,7 +189,7 @@ struct CalendarGridView: View {
                             .frame(maxWidth: .infinity)
                     )
                     .onTapGesture {
-                        vm.changeDay(day)
+                        calendarVM.changeDay(day)
                     }
                 
             }
