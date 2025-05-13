@@ -8,8 +8,6 @@
 import SwiftUI
 import SwiftData
 
-// 무산소 운동 ->
-
 struct RetrospectView: View {
 	// MARK: SwiftData Context
     @Environment(\.modelContext) var context
@@ -132,10 +130,18 @@ struct RetrospectView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
+                    // TODO: PM -> AM 으로 넘어갈 때 시간 오차를 수정해야 합니다.
                     // MARK: 저장할 때 운동 시간 검증을 해야 합니다.
-                    // MARK: 운동명을 기입했는지 검증을 해야 합니다.
-                    // MARK: nil로 선언할 수 있는게 필요한가?
-                    // MARK: 저장 및 수정을 분기해야 합니다.
+                    guard isValidTime(from: startTime, to: finishTime) else {
+                        // MARK: 검증 실패
+                        print("검증 실패")
+                        return
+                    }
+
+                    // TODO: 운동명을 기입했는지 검증을 해야 합니다.
+
+                    // TODO: 저장 및 수정을 분기해야 합니다.
+
                     let retrospect = Retrospect(
                         date: .now,
                         category: selectedCategoryList,
@@ -165,6 +171,15 @@ struct RetrospectView: View {
         }
         .navigationTitle("운동 기록")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    /// 날짜 차이에 따라서 Bool값을 반환합니다.
+    /// - Parameters:
+    ///   - date1: 시작 시간
+    ///   - date2: 종료 시간
+    /// - Returns: 시간 시간이 종료시간보다 작거나 같다면 true, 더 크다면 false를 반환합니다.
+    func isValidTime(from date1: Date, to date2: Date) -> Bool {
+        return date1 <= date2
     }
 }
 
