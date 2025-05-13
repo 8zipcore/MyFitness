@@ -10,6 +10,11 @@ import SwiftData
 
 struct MainView: View {
     
+    @Environment(\.colorScheme) private var colorScheme
+    
+    @StateObject private var retrospectVM = RetrospectViewModel()
+    @StateObject private var calendarVM = CalendarViewModel()
+    
     @Query
     var retrospects: [Retrospect] = []
     var retrospect: Retrospect? {
@@ -17,11 +22,6 @@ struct MainView: View {
             Calendar.current.isDate($0.date, inSameDayAs: calendarVM.selectedDate)
         }.first
     }
-    
-    @StateObject private var retrospectVM = RetrospectViewModel()
-    @StateObject private var calendarVM = CalendarViewModel()
-    
-    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         let circleWidth: CGFloat = 30

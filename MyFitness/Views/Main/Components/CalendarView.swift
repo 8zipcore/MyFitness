@@ -11,10 +11,10 @@ import SwiftData
 struct CalendarView: View {
     @Environment(\.colorScheme) private var colorScheme
     
+    @ObservedObject var calendarVM: CalendarViewModel
+    
     @Query
     var retrospects: [Retrospect] = []
-    
-    @ObservedObject var calendarVM: CalendarViewModel
     
     @State private var selection = 1
     @State private var showDatePicker = false
