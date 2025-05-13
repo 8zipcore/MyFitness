@@ -1,5 +1,5 @@
 //
-//  Restospect.swift
+//  Retrospect.swift
 //  MyFitness
 //
 //  Created by 강대훈 on 5/12/25.
