@@ -9,26 +9,44 @@ import SwiftUI
 
 struct CalendarView: View {
     
-    @StateObject var vm: CalendarViewModel
+    @ObservedObject var vm: CalendarViewModel
     
     @State private var selection = 1
     @State private var showDatePicker = false
+    
+    @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
+    @State private var selectedMonth: Int = Calendar.current.component(.month, from: Date())
     
     @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         let iconWidth: CGFloat = 8
         
-        let primaryColor: Color = colorScheme == .light ? .black : .white
+        let isLight = colorScheme == .light
+        let primaryColor: Color = isLight ? .black : .white
+        let datePickerBackgroundColor: Color = isLight ? .white : RGB(r: 28, g: 28, b: 30)
+        
+        let datePickerButtonImage = showDatePicker ? "chevron.right" : "chevron.down"
         
         VStack(spacing: 0) {
             HStack(spacing: 35) {
-                Text(vm.currentMonthDate.toYearMonthString())
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .onTapGesture {
-                        showDatePicker.toggle()
+                HStack {
+                    Text(vm.currentMonthDate.toYearMonthString())
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(primaryColor)
+                    
+                    withAnimation {
+                        Image(systemName: datePickerButtonImage)
+                            .resizable()
+                            .scaledToFit()
+                            .tint(primaryColor)
+                            .frame(width: 13, height: 13)
                     }
+                }
+                .onTapGesture {
+                    showDatePicker.toggle()
+                }
                 
                 Spacer()
                 
@@ -59,40 +77,71 @@ struct CalendarView: View {
             .padding(.vertical, 20)
             .padding(.horizontal, 5)
             
-            HStack {
-                ForEach(vm.weekdays, id:\.self) { weekday in
-                    Text(weekday)
-                        .font(.subheadline)
-                        .foregroundStyle(.gray)
+            VStack(spacing: 0) {
+                HStack {
+                    ForEach(vm.weekdays, id:\.self) { weekday in
+                        Text(weekday)
+                            .font(.subheadline)
+                            .foregroundStyle(.gray)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
-            }
-            .padding(.vertical, 5)
-            
-            TabView(selection: $selection) {
-                ForEach(vm.months.indices, id: \.self) { index in
-                    CalendarGridView(
-                        vm: vm,
-                        days: vm.months[index],
-                        writtenDates: [],
-                        primaryColor: primaryColor
-                    )
-                    .tag(index)
-                    .onDisappear {
-                        if selection == 0 {
-                            vm.changeMonth(by: .previos)
+                .padding(.vertical, 5)
+                
+                TabView(selection: $selection) {
+                    ForEach(vm.months.indices, id: \.self) { index in
+                        CalendarGridView(
+                            vm: vm,
+                            days: vm.months[index],
+                            writtenDates: [],
+                            primaryColor: primaryColor
+                        )
+                        .tag(index)
+                        .onDisappear {
+                            if selection == 0 {
+                                vm.changeMonth(by: .previos)
+                            }
+                            
+                            if selection == 2 {
+                                vm.changeMonth(by: .next)
+                            }
+                            
+                            selection = 1
                         }
-                        
-                        if selection == 2 {
-                            vm.changeMonth(by: .next)
-                        }
-                        
-                        selection = 1
                     }
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .frame(height: 180)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: 180)
+            .overlay {
+                if showDatePicker {
+                    HStack(spacing: 0) {
+                        Picker("연도", selection: $selectedYear) {
+                            ForEach(Array(1900...2100), id: \.self) { year in
+                                Text("\(String(year)) 년")
+                                    .tag(year)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+
+                        Picker("월", selection: $selectedMonth) {
+                            ForEach(Array(1...23), id: \.self) { month in
+                                Text("\(month) 월")
+                                    .tag(month)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .pickerStyle(.wheel)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(datePickerBackgroundColor)
+                    )
+                    .onChange(of: selectedYear) { vm.changeYear($0) }
+                    .onChange(of: selectedMonth) { vm.changeMonth($0) }
+                }
+            }
         }
         .padding(.horizontal, 30)
     }
