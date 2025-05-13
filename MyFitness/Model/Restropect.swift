@@ -68,6 +68,12 @@ final class Anaerobic {
         self.count = count
         self.set = set
     }
+
+    /// Retrospect 화면에서 "무산소 운동 추가" 에서 사용됩니다.
+    /// - Returns: 초기 값의 Anaerobic 객체가 반환됩니다.
+    static func emptyData() -> Anaerobic {
+        return Anaerobic(exercise: Exercise(name: ""), weight: 0, count: 0, set: 0)
+    }
 }
 
 // MARK: Cardio (유산소 데이터 스키마)
@@ -81,6 +87,12 @@ final class Cardio {
         self.id = id
         self.exercise = exercise
         self.minutes = minutes
+    }
+    
+    /// Retrospect 화면에서 "유산소 운동 추가" 에서 사용됩니다.
+    /// - Returns: 초기 값의 Cardio 객체가 반환됩니다.
+    static func emptyData() -> Cardio {
+        return Cardio(exercise: Exercise(name: ""), minutes: 0)
     }
 }
 
