@@ -8,21 +8,93 @@
 import SwiftUI
 import SwiftData
 
+final class RetrospectWriteViewModel: ObservableObject {
+    @Published var retrospect: Retrospect
+
+    /// 최초 생성시에 사용되는 생성자입니다.
+    convenience init() {
+        self.init(retrospect: Retrospect(
+            date: Date.now,
+            category: [],
+            anaerobics: [],
+            cardios: [],
+            startTime: Date.now,
+            finishTime: Date.now,
+            satisfaction: 0,
+            writing: "",
+            bookMark: false
+        ))
+    }
+
+    /// 수정시에 사용되는 생성자입니다.
+    /// - Parameter retrospect: 기존에 존재하는 회고 데이터를 받아옵니다.
+    init(retrospect: Retrospect) {
+        self.retrospect = retrospect
+    }
+
+    
+    /// 오후에서 오전으로 넘어가는 날에 하루가 추가되도록 합니다.
+    func checkPMtoAMTime() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "a"
+        formatter.locale = Locale(identifier: "ko_kr")
+        let startDate = formatter.string(from: retrospect.startTime)
+        let finishDate = formatter.string(from: retrospect.finishTime)
+
+        if ((startDate == "오후" && finishDate == "오전") && !isValidTime()) { // startDate가 finishDate보다 큰 경우에만 발생해야 함.
+            if let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: retrospect.finishTime) {
+                retrospect.finishTime = tomorrow
+            }
+        }
+    }
+
+    /// 날짜 차이에 따라서 Bool값을 반환합니다.
+    func isValidTime() -> Bool {
+        return retrospect.startTime <= retrospect.finishTime
+    }
+
+    /// 운동 입력에서 입력을 하지 않음에 따라서 Bool값을 반환합니다.
+    func isValidExercise() -> Bool {
+        for anaerobic in retrospect.anaerobics {
+            if anaerobic.exercise.name.isEmpty { return false }
+        }
+
+        for cardio in retrospect.cardios {
+            if cardio.exercise.name.isEmpty { return false }
+        }
+
+        return true
+    }
+}
+
+// MVVM -> 프로퍼티 -> 생성자 -> 메소드
+// Environment -> ViewModel -> Query -> State -> 일반 프로퍼티
+// 주석 어디까지 달면 좋을까?
+
 struct RetrospectView: View {
-	// MARK: SwiftData Context
+    // MARK: SwiftData Context
     @Environment(\.modelContext) var context
 
-    // MARK: retrospect가 nil이면 생성, 존재한다면 수정 로직을 진행합니다.
-    var retrospect: Retrospect?
-    @FocusState private var isFocused: Bool
-    @State private var anaerobics: [Anaerobic] = []
-    @State private var cardios: [Cardio] = []
-    @State private var satisfaction: Int = 0
-    @State private var startTime: Date = .now
-    @State private var finishTime: Date = .now
-    @State private var writing: String = ""
+    @StateObject var viewModel: RetrospectWriteViewModel
+
     @State private var categoryList: [Category] = Category.allCases
-    @State private var selectedCategoryList: [Category] = []
+    @FocusState private var isFocused: Bool
+
+    let isCreate: Bool
+    
+    /// RetrospectView 생성자
+    /// - Parameters:
+    ///   - isCreated: 최초 생성인지 수정인지 Bool값으로 받습니다.
+    ///   - retrospect: 만약 수정이라면 회고 데이터를 전달받습니다.
+    init(isCreated: Bool, retrospect: Retrospect? = nil) {
+        if let retrospect = retrospect {
+            _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel(retrospect: retrospect))
+        } else {
+            _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel())
+        }
+
+        self.isCreate = isCreated
+    }
 
     var body: some View {
         Form {
@@ -31,17 +103,17 @@ struct RetrospectView: View {
                     HStack {
                         Text(category.wrappedValue.rawValue)
                         Spacer()
-                        if selectedCategoryList.contains(category.wrappedValue) {
+                        if viewModel.retrospect.category.contains(category.wrappedValue) {
                             Image(systemName: "checkmark")
                                 .foregroundStyle(.blue)
                         }
                     }
                     .contentShape(Rectangle()) // 제스쳐 범위 늘리기
                     .onTapGesture {
-                        if selectedCategoryList.contains(category.wrappedValue) {
-                            selectedCategoryList = selectedCategoryList.filter { $0 != category.wrappedValue }
+                        if viewModel.retrospect.category.contains(category.wrappedValue) {
+                            viewModel.retrospect.category = viewModel.retrospect.category.filter { $0 != category.wrappedValue }
                         } else {
-                            selectedCategoryList.append(category.wrappedValue)
+                            viewModel.retrospect.category.append(category.wrappedValue)
                         }
                     }
                 }
@@ -49,31 +121,32 @@ struct RetrospectView: View {
 
             Section("무산소 운동") {
                 List {
-                    ForEach($anaerobics) { $anaerobic in
+                    ForEach($viewModel.retrospect.anaerobics) { $anaerobic in
                         AnaerobicView(anaerobic: $anaerobic)
                     }
                     .onDelete { indexPath in
-                        anaerobics.remove(atOffsets: indexPath)
+                        viewModel.retrospect.anaerobics.remove(atOffsets: indexPath)
                     }
                 }
 
                 Button {
-                    anaerobics.append(Anaerobic(exercise: Exercise(name: ""), weight: 0, count: 0, set: 0))
+                    viewModel.retrospect.anaerobics.append(Anaerobic(exercise: Exercise(name: ""), weight: 0, count: 0, set: 0))
                 } label: {
                     Label("추가", systemImage: "plus")
                 }
             }
+
             Section("유산소 운동") {
                 List {
-                    ForEach($cardios) { $cardio in
+                    ForEach($viewModel.retrospect.cardios) { $cardio in
                         CardioView(cardio: $cardio)
                     }
                     .onDelete { indexPath in
-                        cardios.remove(atOffsets: indexPath)
+                        viewModel.retrospect.cardios.remove(atOffsets: indexPath)
                     }
                 }
                 Button {
-                    cardios.append(Cardio(exercise: Exercise(name: ""), minutes: 0))
+                    viewModel.retrospect.cardios.append(Cardio(exercise: Exercise(name: ""), minutes: 0))
                 } label: {
                     Label("추가", systemImage: "plus")
                 }
@@ -84,18 +157,11 @@ struct RetrospectView: View {
                         HStack {
                             Text("금일 운동은 어땠나요?")
                             Spacer()
-                            Text("\(satisfaction)%")
+                            Text("\(Int(viewModel.retrospect.satisfaction))%")
                         }
 
                         // TODO: Slider 구현
                     }
-//                    Text("금일 운동은 어땠나요?")
-//                    Spacer()
-//                    Picker("", selection: $satisfaction) {
-//                        ForEach(Array(stride(from: 0, through: 100, by: 10)), id: \.self) { number in
-//                            Text("\(number)%")
-//                        }
-//                    }
                 }
             }
 
@@ -104,8 +170,9 @@ struct RetrospectView: View {
                     HStack {
                         Text("시작 시간")
                         Spacer()
-                        DatePicker("시간 선택", selection: $startTime, displayedComponents: .hourAndMinute)
-                            .datePickerStyle(.graphical) // 또는 .compact, .graphical
+                        DatePicker("시간 선택", selection: $viewModel.retrospect.startTime, displayedComponents:
+                                .hourAndMinute)
+                        	.datePickerStyle(.graphical) // 또는 .compact, .graphical
                             .labelsHidden()
                             .frame(width: 200, height: 30)
                     }
@@ -113,7 +180,7 @@ struct RetrospectView: View {
                     HStack {
                         Text("종료 시간")
                         Spacer()
-                        DatePicker("시간 선택", selection: $finishTime, displayedComponents: .hourAndMinute)
+                        DatePicker("시간 선택", selection: $viewModel.retrospect.finishTime, displayedComponents: .hourAndMinute)
                             .datePickerStyle(.graphical) // 또는 .compact, .graphical
                             .labelsHidden()
                             .frame(width: 200, height: 30)
@@ -121,13 +188,12 @@ struct RetrospectView: View {
 
                 }
             }
-
             Section("회고") {
-                TextEditor(text: $writing)
+                TextEditor(text: $viewModel.retrospect.writing)
                     .focused($isFocused)
                     .frame(minHeight: 150)
                     .overlay {
-                        if !isFocused && writing.isEmpty {
+                        if !isFocused && viewModel.retrospect.writing.isEmpty {
                             Text("금일 운동의 회고를 적어주세요!")
                                 .foregroundStyle(.gray)
                         }
@@ -137,56 +203,35 @@ struct RetrospectView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    // TODO: PM -> AM 으로 넘어갈 때 시간 오차를 수정해야 합니다.
-                    // MARK: 저장할 때 운동 시간 검증을 해야 합니다.
-                    guard isValidTime(from: startTime, to: finishTime) else {
-                        // MARK: 검증 실패
-                        print("검증 실패")
+                    viewModel.checkPMtoAMTime()
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                    dateFormatter.locale = Locale(identifier: "ko_kr")
+                    print(dateFormatter.string(from: viewModel.retrospect.startTime))
+                    print(dateFormatter.string(from: viewModel.retrospect.finishTime))
+
+                    guard viewModel.isValidTime() else {
+                        print("검증1")
                         return
                     }
 
-                    // TODO: 운동명을 기입했는지 검증을 해야 합니다.
+                    guard viewModel.isValidExercise() else {
+                        print("검증2")
+                        return
+                    }
 
-                    // TODO: 저장 및 수정을 분기해야 합니다.
-
-                    let retrospect = Retrospect(
-                        date: .now,
-                        category: selectedCategoryList,
-                        anaerobics: anaerobics,
-                        cardios: cardios,
-                        startTime: startTime,
-                        finishTime: finishTime,
-                        satisfaction: Double(satisfaction),
-                        writing: writing,
-                        bookMark: false
-                    )
-
-                    print(
-                        retrospect.category,
-                        retrospect.anaerobics,
-                        retrospect.cardios,
-                        retrospect.startTime,
-                        retrospect.finishTime,
-                        retrospect.satisfaction,
-                        retrospect.writing,
-                        retrospect.bookMark
-                    )
+                    if isCreate {
+						// TODO: 생성 DB 추가
+                    } else {
+						// TODO: 생성 DB 수정
+                    }
                 } label: {
-                    Text(retrospect == nil ? "저장" : "수정")
+                    Text(isCreate == true ? "저장" : "수정")
                 }
             }
         }
         .navigationTitle("운동 기록")
         .navigationBarTitleDisplayMode(.inline)
-    }
-    
-    /// 날짜 차이에 따라서 Bool값을 반환합니다.
-    /// - Parameters:
-    ///   - date1: 시작 시간
-    ///   - date2: 종료 시간
-    /// - Returns: 시간 시간이 종료시간보다 작거나 같다면 true, 더 크다면 false를 반환합니다.
-    func isValidTime(from date1: Date, to date2: Date) -> Bool {
-        return date1 <= date2
     }
 }
 
@@ -341,9 +386,15 @@ struct addCustomExerciseView: View {
 }
 
 // MARK: - Preview
-#Preview {
+#Preview("수정 화면") {
     NavigationStack {
-        RetrospectView()
+        RetrospectView(isCreated: false, retrospect: Retrospect(date: .now, category: [.arms], anaerobics: [Anaerobic(exercise: Exercise(name: "데드 리프트"), weight: 65, count: 10, set: 5)], cardios: [Cardio(exercise: Exercise(name: "런닝머신"), minutes: 30)], startTime: .now, finishTime: .now, satisfaction: 50.0, writing: "감사합니다", bookMark: false))
+    }
+}
+
+#Preview("생성 화면") {
+    NavigationStack {
+        RetrospectView(isCreated: true)
     }
 }
 
@@ -368,5 +419,5 @@ struct addCustomExerciseView: View {
             .modelContainer(container)
     }
 }
-
+//
 
