@@ -12,9 +12,10 @@ import SwiftData
 struct MyFitnessApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Restospect.self,
+            Retrospect.self,
             Anaerobic.self,
-            Cardio.self
+            Cardio.self,
+            Exercise.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
