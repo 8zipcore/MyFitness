@@ -11,14 +11,14 @@ import SwiftData
 struct MainView: View {
     
     @Query
-    var restospects: [Restospect] = []
-    var restospect: Restospect? {
-        restospects.filter {
+    var retrospects: [Retrospect] = []
+    var retrospect: Retrospect? {
+        retrospects.filter {
             Calendar.current.isDate($0.date, inSameDayAs: calendarVM.selectedDate)
         }.first
     }
     
-    @StateObject private var restospectVM = RestospectViewModel()
+    @StateObject private var retrospectVM = RetrospectViewModel()
     @StateObject private var calendarVM = CalendarViewModel()
     
     @Environment(\.colorScheme) private var colorScheme
@@ -51,14 +51,14 @@ struct MainView: View {
                             comments: "오늘의 한줄평 입니다"
                         )
                         
-                        if let restospect = restospect {
+                        if let retrospect = retrospect {
                             WorkoutItemView(
-                                workoutItems: restospectVM.converToWorkoutItems(from: restospect)
+                                workoutItems: retrospectVM.converToWorkoutItems(from: retrospect)
                             )
                             
                             CommentsItemView(
                                 date: calendarVM.selectedDate.toString(),
-                                comments: restospect.writing
+                                comments: retrospect.writing
                             )
                         }
                         
