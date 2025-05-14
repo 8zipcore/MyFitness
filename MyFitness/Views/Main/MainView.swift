@@ -31,9 +31,9 @@ struct MainView: View {
         let isLight = colorScheme == .light
 
         let primaryColor: Color = isLight ? .black : .white
-        let backgroundColor: Color = isLight ? RGB(r: 247, g: 247, b: 247) : .black
+        let backgroundColor: Color = isLight ? RGB(r: 242, g: 242, b: 247) : RGB(r: 28, g: 28, b: 30)
         let toolBarBackgroundColor: Color = isLight ? .black.opacity(0.1) : .white.opacity(0.2)
-        let itemViewBackgroundColor: Color = isLight ? .white : RGB(r: 28, g: 28, b: 30)
+        let itemViewBackgroundColor: Color = isLight ? .white : RGB(r: 44, g: 44, b: 46)
 
         let isRetrospectEmpty = retrospect == nil
         
