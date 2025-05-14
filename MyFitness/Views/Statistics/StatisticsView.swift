@@ -26,13 +26,6 @@ var exampleList: [Retrospect] = [
 ]
 
 // 통계뷰
-enum WeekOrMonth: String, CaseIterable, Identifiable {
-    case week = "7일"
-    case month = "30일"
-
-    var id: String { self.rawValue }
-}
-
 struct StatisticsView: View {
     @Environment(\.colorScheme) private var colorScheme
 
@@ -41,17 +34,15 @@ struct StatisticsView: View {
     @Query(sort: [SortDescriptor(\Retrospect.date, order: .reverse)])
     private var retrospects: [Retrospect]
 
-    @State private var weekOrMonth: WeekOrMonth = .week
-    @State private var showAnaerobicAll: Bool = false
-    @State private var showCardioAll: Bool = false
-
     init() {
         viewModel.setData(retrospects: exampleList)
     }
 
     var body: some View {
+        TitleView(viewModel: viewModel)
+
         Form {
-            Picker("기간", selection: $weekOrMonth) {
+            Picker("기간", selection: $viewModel.weekOrMonth) {
                 ForEach(WeekOrMonth.allCases) { option in
                     Text(option.rawValue).tag(option)
                 }
@@ -60,61 +51,23 @@ struct StatisticsView: View {
             .padding()
 
             Section {
-                VStack(alignment: .leading) {
-                    Text("이번 \(weekOrMonth == .week ? "주" : "달") 운동한 날")
-                        .font(.title3)
-                        .foregroundStyle(.gray)
-
-                    Text("5번")
-                        .font(.title)
-                        .bold()
-                }
+                ExerciseDayView(viewModel: viewModel)
             }
 
             Section {
                 WorkoutTimeChartView(
                     statisticsVM: viewModel,
                     retrospects: exampleList,
-                    weekOrMonth: weekOrMonth
+                    weekOrMonth: viewModel.weekOrMonth
                 )
             }
 
             Section {
-                Text("운동한 시간대 통계")
-                VStack {
-                    Chart(viewModel.periodTimes, id: \.period) { element in
-                        BarMark(x: .value("Count", element.count), stacking: .normalized)
-                            .foregroundStyle(by: .value("Period", element.period.rawValue))
-                            .cornerRadius(10)
-                    }
-                }
-                .padding()
-
-                List(viewModel.periodTimes, id: \.period) { element in
-                    HStack {
-                        Text(element.period.rawValue)
-                        Text(element.period.timeRange)
-                            .font(.callout)
-                            .foregroundStyle(.gray)
-                        Spacer()
-                        Text("\(element.count)")
-                            .bold()
-                    }
-                }
+                PeriodStatisticsView(viewModel: viewModel)
             }
 
             Section {
-                // MARK: - 원형 프로그레스바 완성
-                Text("카테고리별 운동 횟수")
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(Category.allCases, id: \.self) { category in
-                            let count = viewModel.getCategoryCount(retrospects: exampleList, category: category)
-                            // TODO: 최대 개수 구해서 하기, 정렬
-                            CircularView(category: category, count: count)
-                        }
-                    }
-                }
+                CategoryPerCountView(viewModel: viewModel)
             }
 
             Section {
@@ -127,7 +80,7 @@ struct StatisticsView: View {
                         .font(.title)
                         .bold()
                 }
-                List(showAnaerobicAll ? viewModel.anaerobicCounts : Array(viewModel.anaerobicCounts.prefix(5)), id: \.name) { exercise in // 무산소 세부 운동 이름과, 횟수를 가져와야 합니당
+                List(viewModel.showAnaerobicAll ? viewModel.anaerobicCounts : Array(viewModel.anaerobicCounts.prefix(5)), id: \.name) { exercise in // 무산소 세부 운동 이름과, 횟수를 가져와야 합니당
 
                     HStack {
                         VStack(alignment: .leading) {
@@ -146,11 +99,11 @@ struct StatisticsView: View {
 
                     }
                 }
-                if !showAnaerobicAll && viewModel.anaerobicCounts.count > 5 {
+                if !viewModel.showAnaerobicAll && viewModel.anaerobicCounts.count > 5 {
                     Button {
-                        showAnaerobicAll = true
+                        viewModel.showAnaerobicAll = true
                     } label: {
-                        if !showAnaerobicAll {
+                        if !viewModel.showAnaerobicAll {
                             Label("더보기", systemImage: "plus")
                         }
                     }
@@ -167,7 +120,7 @@ struct StatisticsView: View {
                         .font(.title)
                         .bold()
                 }
-                List(showCardioAll ? viewModel.cardioCounts : Array(viewModel.cardioCounts.prefix(5)), id: \.name) { exercise in
+                List(viewModel.showCardioAll ? viewModel.cardioCounts : Array(viewModel.cardioCounts.prefix(5)), id: \.name) { exercise in
                     HStack {
 
                         VStack(alignment: .leading) {
@@ -185,82 +138,35 @@ struct StatisticsView: View {
                         }
                     }
                 }
-                if !showCardioAll && viewModel.cardioCounts.count > 5 {
+                if !viewModel.showCardioAll && viewModel.cardioCounts.count > 5 {
                     Button {
-                        showCardioAll = true
+                        viewModel.showCardioAll = true
                     } label: {
                         Label("더보기", systemImage: "plus")
                     }
                 }
             }
         }
-        // TODO: 문제는 처음 화면이 뜰 때 데이터를 받지 못함
-        // TODO: 날짜를 넘겨줘야 할수도??
         .onChange(of: viewModel.selectedDate) {
             viewModel.setData(retrospects: exampleList)
-            showCardioAll = false
-            showAnaerobicAll = false
         }
-        .onChange(of: weekOrMonth) {
+        .onChange(of: viewModel.weekOrMonth) {
             viewModel.setData(retrospects: exampleList)
-            showCardioAll = false
-            showAnaerobicAll = false
         }
         .onAppear {
             viewModel.setData(retrospects: exampleList)
-            showCardioAll = false
-            showAnaerobicAll = false
         }
         .navigationTitle("통계")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-struct CircularView: View {
-    var category: Category
-    var count: Int
 
-    var body: some View {
-        VStack {
-            Text(category.rawValue)
-                .bold()
-                .padding(.bottom, 10)
-            CircularProgressBarView(category: category, progress: Double(count) / 10.0, count: count)
-        }
-        .padding(30)
-        .background {
-            RoundedRectangle(cornerRadius: 15)
-                .fill(.black.opacity(0.04))
-        }
-    }
-}
 
-struct CircularProgressBarView: View {
-    var category: Category
-    var progress: Double = 0.0
-    var count: Int = 0
 
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(lineWidth: 12)
-                .opacity(0.2)
-                .foregroundColor(category.color.opacity(0.4))
-
-            Circle()
-                .trim(from: 0.0, to: progress)
-                .stroke(style: StrokeStyle(lineWidth: 12, lineCap: .round))
-                .foregroundColor(category.color)
-                .rotationEffect(.degrees(-90))
-
-            Text("\(count)건")
-                .font(.title2)
-                .bold()
-        }
-        .frame(width: 100, height: 100)
-    }
-}
 
 #Preview {
-    StatisticsView()
+    NavigationStack {
+        StatisticsView()
+    }
 }

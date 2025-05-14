@@ -14,6 +14,10 @@ final class StatisticsViewModel: ObservableObject {
     @Published var anaerobicMaxCount: Int = 0
     @Published var cardioMaxCount: Int = 0
 
+    @Published var weekOrMonth: WeekOrMonth = .week
+    @Published var showAnaerobicAll: Bool = false
+    @Published var showCardioAll: Bool = false
+
     @Published var selectedDate: Date = .now
 
     init() {
@@ -32,6 +36,9 @@ final class StatisticsViewModel: ObservableObject {
 
         anaerobicMaxCount = anaerobicCounts.max { $0.count < $1.count }?.count ?? 0
         cardioMaxCount = cardioCounts.max { $0.count < $1.count }?.count ?? 0
+
+        showAnaerobicAll = false
+        showCardioAll = false
     }
 
     func getCategoryCount(retrospects: [Retrospect], category: Category) -> Int {
