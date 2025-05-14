@@ -36,18 +36,18 @@ struct MainView: View {
         let itemViewBackgroundColor: Color = isLight ? .white : RGB(r: 28, g: 28, b: 30)
 
         let isRetrospectEmpty = retrospect == nil
-
+        
         ZStack {
             ScrollView {
                 CalendarView(calendarVM: calendarVM, writtenDates: retrospectVM.writtenDates(from: retrospects))
-
+                
                 Group {
                     if let retrospect = retrospect { // 운동 기록 있으면
                         WorkoutItemView(
                             workoutItems: retrospectVM.converToWorkoutItems(from: retrospect),
                             textColor: primaryColor
                         )
-
+                        
                         CommentsItemView(
                             date: calendarVM.selectedDate.toString(),
                             comments: retrospect.writing,
@@ -60,16 +60,26 @@ struct MainView: View {
                             textColor: primaryColor
                         )
                     }
-
+                    
                     HStack {
-                        Text("이번주 운동 횟수")
+                        // 현재 달보다 선택된 날짜가 이전이면
+                        let title = calendarVM.isBeforeCurrentMonth() ? "\(calendarVM.selectedDateMonth)월 운동 횟수" : "이번 달 운동 횟수"
+                        
+                        Text(title)
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundStyle(primaryColor)
-
+                        
                         Spacer()
-
-                        Text("3회")
+                        
+                        let workoutCount = retrospectVM.workoutCount(
+                            from: calendarVM.selectedDate,
+                            writtenDates: retrospectVM.writtenDates(
+                                from: retrospects
+                            )
+                        )
+                        
+                        Text("\(String(workoutCount))회")
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundStyle(primaryColor)
