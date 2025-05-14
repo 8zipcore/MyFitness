@@ -22,9 +22,7 @@ final class SearchViewModel: ObservableObject {
         self.selectedSort = .dateDesc
         self.retrospects = []
     }
-
     
-
     /// 필터링 해서 표시해줄 배열입니다
     private var filteredRetrospects: [Retrospect] {
         let filtered = retrospects.filter { restro in
@@ -82,7 +80,12 @@ final class SearchViewModel: ObservableObject {
     /// 회고록 삭제입니다
     func delete(_ item: Retrospect, context: ModelContext) {
         context.delete(item)
-        try? context.save()
+        do {
+            try context.save()
+            loadRetrospects(from: context)
+        } catch {
+            print("삭제 실패", error)
+        }
     }
 
     
