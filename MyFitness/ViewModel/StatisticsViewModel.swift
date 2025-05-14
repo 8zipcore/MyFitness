@@ -8,12 +8,7 @@
 import Foundation
 
 final class StatisticsViewModel: ObservableObject {
-    /// StatisticsView에서 날짜를 이전 또는 다음으로 이동할 방향을 나타냅니다.
-    enum CalendarDirection {
-        case previous
-        case next
-    }
-    
+ 
     @Published var selectedDate: Date = .now
     @Published var periodTimes: [PeriodTime] = []
     @Published var anaerobicCounts: [ExerciseCount] = []
