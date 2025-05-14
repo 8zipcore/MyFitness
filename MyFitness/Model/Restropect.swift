@@ -56,14 +56,14 @@ final class Retrospect {
 @Model
 final class Anaerobic {
     @Attribute(.unique) var id: UUID
-    var exercise: Exercise
+    var name: String
     var weight: Int
     var count: Int
     var set: Int
 
-    init(id: UUID = UUID(), exercise: Exercise, weight: Int, count: Int, set: Int) {
+    init(id: UUID = UUID(), name: String, weight: Int, count: Int, set: Int) {
         self.id = id
-        self.exercise = exercise
+        self.name = name
         self.weight = weight
         self.count = count
         self.set = set
@@ -72,7 +72,7 @@ final class Anaerobic {
     /// Retrospect 화면에서 "무산소 운동 추가" 에서 사용됩니다.
     /// - Returns: 초기 값의 Anaerobic 객체가 반환됩니다.
     static func emptyData() -> Anaerobic {
-        return Anaerobic(exercise: Exercise(name: "", exerciseType: .anaerobic), weight: 0, count: 0, set: 0)
+        return Anaerobic(name: "", weight: 0, count: 0, set: 0)
     }
 }
 
@@ -80,19 +80,19 @@ final class Anaerobic {
 @Model
 final class Cardio {
     @Attribute(.unique) var id: UUID
-    var exercise: Exercise
+    var name: String
     var minutes: Int
 
-    init(id: UUID = UUID(), exercise: Exercise, minutes: Int) {
+    init(id: UUID = UUID(), name: String, minutes: Int) {
         self.id = id
-        self.exercise = exercise
+        self.name = name
         self.minutes = minutes
     }
     
     /// Retrospect 화면에서 "유산소 운동 추가" 에서 사용됩니다.
     /// - Returns: 초기 값의 Cardio 객체가 반환됩니다.
     static func emptyData() -> Cardio {
-        return Cardio(exercise: Exercise(name: "", exerciseType: .cardio), minutes: 0)
+        return Cardio(name: "", minutes: 0)
     }
 }
 

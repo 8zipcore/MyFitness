@@ -12,7 +12,13 @@ import SwiftData
 struct SearchView: View {
     @Environment(\.modelContext) var context
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    
     @StateObject private var searchVM = SearchViewModel()
+    
+    @State private var selectedRetrospect: Retrospect? = nil
+    @State private var isPresentingSheet = false
+    @State private var modalDate = Date()
+
 
     @Query
     var retrospects: [Retrospect]
@@ -39,26 +45,33 @@ struct SearchView: View {
                 .padding(.vertical, 6)
 
                 ForEach(searchVM.sortedAndFiltered) { item in
-                    NavigationLink {
-                        RetrospectView(isCreate: false, retrospect: item) // isCreate 호출 안들어감.
-                    } label: {
-                        ListItemView(item: item)
-                            .swipeActions(edge: .leading) { // 오른쪽으로 스와이프해서 북마크
-                                Button {
-                                    searchVM.toggleBookmark(item, context: context)
-                                } label: {
-                                    Image(systemName: "bookmark")
-                                }
-                                .tint(.orange)
+                    ListItemView(item: item)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            selectedRetrospect = item
+                            modalDate = item.date
+                            isPresentingSheet = true
+                        }
+                        .swipeActions(edge: .leading) { // 오른쪽으로 스와이프해서 북마크
+                            Button {
+                                searchVM.toggleBookmark(item, context: context)
+                            } label: {
+                                Image(systemName: "bookmark")
                             }
-                            .swipeActions(edge: .trailing) { // 왼쪽으로 스와이프해서 삭제
-                                Button(role: .destructive) {
-                                    searchVM.delete(item, context: context)
-                                } label: {
-                                    Image(systemName: "trash")
-                                }
+                            .tint(.orange)
+                        }
+                        .swipeActions(edge: .trailing) { // 왼쪽으로 스와이프해서 삭제
+                            Button(role: .destructive) {
+                                searchVM.delete(item, context: context)
+                            } label: {
+                                Image(systemName: "trash")
                             }
-                    }
+                        }
+                }
+            }
+            .sheet(isPresented: $isPresentingSheet) {
+                NavigationStack {
+                    RetrospectView(retrospect: selectedRetrospect, date: modalDate)
                 }
             }
 //            .searchable(text: $searchVM.keyword, prompt: "운동 기록을 검색하세요")

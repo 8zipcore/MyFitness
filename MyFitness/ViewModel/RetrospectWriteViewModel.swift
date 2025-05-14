@@ -53,11 +53,11 @@ final class RetrospectWriteViewModel: ObservableObject {
     /// 운동 입력에서 입력을 하지 않음에 따라서 Bool값을 반환합니다.
     func isValidExercise() -> Bool {
         for anaerobic in retrospect.anaerobics {
-            if anaerobic.exercise.name.isEmpty { return false }
+            if anaerobic.name.isEmpty { return false }
         }
 
         for cardio in retrospect.cardios {
-            if cardio.exercise.name.isEmpty { return false }
+            if cardio.name.isEmpty { return false }
         }
 
         return true
