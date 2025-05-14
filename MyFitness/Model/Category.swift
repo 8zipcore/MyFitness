@@ -5,7 +5,7 @@
 //  Created by 홍승아 on 5/12/25.
 //
 
-import Foundation
+import SwiftUI
 
 /// 사용자가 선택할 수 있는 운동 카테고리
 enum Category: String, CaseIterable, Codable {
@@ -18,14 +18,26 @@ enum Category: String, CaseIterable, Codable {
     case butt = "엉덩이"
     
     var emoji: String {
-            switch self {
-            case .arms: return "💪"
-            case .chest: return "🦍"
-            case .back: return "🐢"
-            case .shoulders: return "🙆‍♂️"
-            case .cardio: return "🏃"
-            case .legs: return "🦵"
-            case .butt: return "🍑"
-            }
+        switch self {
+        case .arms: return "💪"
+        case .chest: return "🦍"
+        case .back: return "🐢"
+        case .shoulders: return "🙆‍♂️"
+        case .cardio: return "🏃"
+        case .legs: return "🦵"
+        case .butt: return "🍑"
         }
+    }
+
+    var color: Color {
+        switch self {
+        case .arms: return .red
+        case .chest: return .green
+        case .back: return .yellow
+        case .shoulders: return .orange
+        case .cardio: return .pink
+        case .legs: return .mint
+        case .butt: return .indigo
+        }
+    }
 }
