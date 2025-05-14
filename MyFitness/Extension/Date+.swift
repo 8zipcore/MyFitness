@@ -22,3 +22,12 @@ extension Date {
         return formatter.string(from: self)
     }
 }
+
+func isSameYearAndMonth(_ lhs: Date, _ rhs: Date) -> Bool {
+    let calendar = Calendar.current
+    let lhsComponents = calendar.dateComponents([.year, .month], from: lhs)
+    let rhsComponents = calendar.dateComponents([.year, .month], from: rhs)
+
+    return lhsComponents.year == rhsComponents.year &&
+           lhsComponents.month == rhsComponents.month
+}
