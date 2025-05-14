@@ -47,12 +47,16 @@ struct MainView: View {
                             workoutItems: retrospectVM.converToWorkoutItems(from: retrospect),
                             textColor: primaryColor
                         )
+                        .contentShape(Rectangle())
+                        .onTapGesture { isPresented = true }
                         
                         CommentsItemView(
                             date: calendarVM.selectedDate.toString(),
                             comments: retrospect.writing,
                             textColor: primaryColor
                         )
+                        .contentShape(Rectangle())
+                        .onTapGesture { isPresented = true }
                     } else { // 운동 기록 없으면
                         CommentsItemView(
                             date: calendarVM.selectedDate.toString(),
@@ -117,7 +121,7 @@ struct MainView: View {
         }
         .sheet(isPresented: $isPresented) {
             NavigationStack {
-                RetrospectView(isCreate: true)
+                RetrospectView(isCreate: true, retrospect: retrospect)
             }
         }
         .scrollIndicators(.hidden)
