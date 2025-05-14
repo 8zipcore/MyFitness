@@ -68,28 +68,30 @@ struct MainView: View {
                         )
                     }
                     
-                    HStack {
-                        // 현재 달보다 선택된 날짜가 이전이면
-                        let title = calendarVM.isBeforeCurrentMonth() ? "\(calendarVM.selectedDateMonth)월 운동 횟수" : "이번 달 운동 횟수"
-                        
-                        Text(title)
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(primaryColor)
-                        
-                        Spacer()
-                        
-                        let retropsectCount = retrospectVM.retropsectCount(
-                            from: calendarVM.selectedDate,
-                            writtenDates: retrospectVM.writtenDates(
-                                from: retrospects
+                    if !calendarVM.isAfterCurrentMonth() {
+                        HStack {
+                            // 현재 달보다 선택된 날짜가 이전이면
+                            let title = calendarVM.isBeforeCurrentMonth() ? "\(calendarVM.selectedDateMonth)월 운동 횟수" : "이번 달 운동 횟수"
+                            
+                            Text(title)
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(primaryColor)
+                            
+                            Spacer()
+                            
+                            let retropsectCount = retrospectVM.retropsectCount(
+                                from: calendarVM.selectedDate,
+                                writtenDates: retrospectVM.writtenDates(
+                                    from: retrospects
+                                )
                             )
-                        )
-                        
-                        Text("\(String(retropsectCount))회")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(primaryColor)
+                            
+                            Text("\(String(retropsectCount))회")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(primaryColor)
+                        }
                     }
                 }
                 .padding(.vertical, 20)

@@ -216,4 +216,24 @@ class CalendarViewModel: ObservableObject {
             return false
         }
     }
+    /// 현재 달보다 이후인지 확인하는 함수입니다.
+    func isAfterCurrentMonth() -> Bool {
+        // TODO: 코드 중복 줄이기
+        let calendar = Calendar.current
+        let now = Date()
+        
+        let currentYear = calendar.component(.year, from: now)
+        let currentMonth = calendar.component(.month, from: now)
+        
+        let targetYear = calendar.component(.year, from: selectedDate)
+        let targetMonth = calendar.component(.month, from: selectedDate)
+        
+        if targetYear > currentYear {
+            return true
+        } else if targetYear == currentYear && targetMonth > currentMonth {
+            return true
+        } else {
+            return false
+        }
+    }
 }
