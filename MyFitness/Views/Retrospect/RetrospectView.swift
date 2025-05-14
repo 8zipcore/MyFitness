@@ -8,9 +8,10 @@
 import SwiftUI
 import SwiftData
 
-// TODO: 스키마 -> 슬라이더
+// TODO: 슬라이더
 // TODO: 수정이 잘 안될 가능성이 있음 안된다면 리팩토링 예정
 
+/// 회고 생성, 수정, 삭제 메인 화면
 struct RetrospectView: View {
     // MARK: SwiftData Context
     @Environment(\.modelContext) var context
@@ -42,11 +43,6 @@ struct RetrospectView: View {
 
     var body: some View {
         Form {
-            //Section {
-            //    DatePicker("설정 날짜", selection: $viewModel.retrospect.date, displayedComponents: [.date])
-            //        .datePickerStyle(.graphical)
-            //}
-
             Section("카테고리") {
                 List($viewModel.categoryList, id: \.self) { category in
                     HStack {
@@ -295,14 +291,13 @@ struct CardioView: View {
     }
 }
 
-
 /// 유저가 세부 운동을 검색할 수 있는 화면
 struct SearchExerciseView: View {
-    @Query(sort: [SortDescriptor(\Exercise.name, order: .forward)])
-    var exercises: [Exercise]
-
     @Environment(\.modelContext) var context
     @Environment(\.dismiss) var dismiss
+
+    @Query(sort: [SortDescriptor(\Exercise.name, order: .forward)])
+    var exercises: [Exercise]
 
     @State var keyword: String = ""
     @Binding var name: String
@@ -350,10 +345,11 @@ struct SearchExerciseView: View {
 
 /// 유저가 직접 운동을 추가할 수 있는 화면
 struct addCustomExerciseView: View {
-    @State private var exerciseLabel: String = ""
     @Environment(\.modelContext) var context
 
-    var exerciseType: ExerciseType
+    @State private var exerciseLabel: String = ""
+
+    let exerciseType: ExerciseType
 
     var body: some View {
         HStack {

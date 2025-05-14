@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 
+/// 회고 생성, 수정, 삭제 화면의 ViewModel
 final class RetrospectWriteViewModel: ObservableObject {
     @Published var retrospect: Retrospect
     @Published var isInvalidDate: Bool = false
@@ -62,6 +63,7 @@ final class RetrospectWriteViewModel: ObservableObject {
         return true
     }
 
+    // MARK: - DataBase 관련 작업
     /// 명시적으로 데이터를 저장합니다.
     /// - Parameter context: DB를 조작할 수 있는 객체입니다.
     func save(context: ModelContext) {
@@ -69,10 +71,14 @@ final class RetrospectWriteViewModel: ObservableObject {
         print(retrospect.anaerobics.count, retrospect.cardios.count)
     }
 
+    /// 데이터를 삭제합니다.
+    /// - Parameter context: DB를 조작할 수 있는 객체입니다.
     func delete(context: ModelContext) {
         context.delete(retrospect)
     }
-
+    
+    /// 데이터를 삽입합니다.
+    /// - Parameter context: DB를 조작할 수 있는 객체입니다.
     func insert(context: ModelContext) {
         context.insert(retrospect)
     }
