@@ -133,10 +133,14 @@ class CalendarViewModel: ObservableObject {
     }
     /// 해당 날짜에 작성된 회고가 있는지 여부를 반환합니다.
     func didWriteRetrospect(on day: Int, writtenDates: [Date]) -> Bool {
-        guard let date = Calendar.current.date(bySetting: .day, value: day, of: currentMonthDate) else { return false }
-        
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month], from: currentMonthDate)
+        components.day = day
+
+        guard let newDate = calendar.date(from: components) else { return false }
+
         return writtenDates.contains { writtenDate in
-            Calendar.current.isDate(writtenDate, inSameDayAs: date)
+            return Calendar.current.isDate(writtenDate, inSameDayAs: newDate)
         }
     }
     /// [`MonthType`](doc:MonthType)에 따른 날짜 배열을 반환하는 함수입니다.

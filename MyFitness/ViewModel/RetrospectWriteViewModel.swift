@@ -9,9 +9,9 @@ final class RetrospectWriteViewModel: ObservableObject {
     @Published var categoryList: [Category] = Category.allCases
 
     /// 최초 생성시에 사용되는 생성자입니다.
-    convenience init() {
+    convenience init(date: Date = .now) {
         self.init(retrospect: Retrospect(
-            date: Date.now,
+            date: date,
             category: [],
             anaerobics: [],
             cardios: [],
@@ -53,11 +53,11 @@ final class RetrospectWriteViewModel: ObservableObject {
     /// 운동 입력에서 입력을 하지 않음에 따라서 Bool값을 반환합니다.
     func isValidExercise() -> Bool {
         for anaerobic in retrospect.anaerobics {
-            if anaerobic.exercise.name.isEmpty { return false }
+            if anaerobic.name.isEmpty { return false }
         }
 
         for cardio in retrospect.cardios {
-            if cardio.exercise.name.isEmpty { return false }
+            if cardio.name.isEmpty { return false }
         }
 
         return true

@@ -14,6 +14,8 @@ struct CommentsItemView: View {
     let textColor: Color
     
     var body: some View {
+        let comments = comments.isEmpty ? "회고를 입력해주세요." : comments
+        
         VStack(alignment: .leading, spacing: 0) {
             Text(date)
                 .font(.headline)

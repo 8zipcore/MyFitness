@@ -43,12 +43,15 @@ struct MainView: View {
                 
                 Group {
                     if let retrospect = retrospect { // 운동 기록 있으면
-                        WorkoutItemView(
-                            workoutItems: retrospectVM.converToWorkoutItems(from: retrospect),
-                            textColor: primaryColor
-                        )
-                        .contentShape(Rectangle())
-                        .onTapGesture { isPresented = true }
+                        
+                        if !retrospectVM.isWorkoutDataEmpty(from: retrospect) {
+                            WorkoutItemView(
+                                workoutItems: retrospectVM.converToWorkoutItems(from: retrospect),
+                                textColor: primaryColor
+                            )
+                            .contentShape(Rectangle())
+                            .onTapGesture { isPresented = true }
+                        }
                         
                         CommentsItemView(
                             date: calendarVM.selectedDate.toString(),
@@ -76,14 +79,14 @@ struct MainView: View {
                         
                         Spacer()
                         
-                        let workoutCount = retrospectVM.workoutCount(
+                        let retropsectCount = retrospectVM.retropsectCount(
                             from: calendarVM.selectedDate,
                             writtenDates: retrospectVM.writtenDates(
                                 from: retrospects
                             )
                         )
                         
-                        Text("\(String(workoutCount))회")
+                        Text("\(String(retropsectCount))회")
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundStyle(primaryColor)
@@ -120,8 +123,10 @@ struct MainView: View {
             }
         }
         .sheet(isPresented: $isPresented) {
+            // CircleButton -> 생성, retrospect -> 뭐 들어가지?
+            // Contents -> 수정
             NavigationStack {
-                RetrospectView(isCreate: true, retrospect: retrospect)
+                RetrospectView(retrospect: retrospect, date: calendarVM.selectedDate)
             }
         }
         .scrollIndicators(.hidden)

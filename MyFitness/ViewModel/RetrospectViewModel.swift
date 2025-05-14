@@ -15,7 +15,7 @@ class RetrospectViewModel: ObservableObject {
         var workoutItems: [WorkoutItem] = []
         
         retrospect.anaerobics.forEach { anaerobic in
-            let title = anaerobic.exercise.name
+            let title = anaerobic.name
             // TODO: 0회 이상인 경우만 출력
             let contents = "\(anaerobic.weight)kg \(anaerobic.count)회"
 //            let contents = "\(anaerobic.weight)kg \(anaerobic.count)회 \(anaerobic.set)세트"
@@ -24,7 +24,7 @@ class RetrospectViewModel: ObservableObject {
         }
         
         retrospect.cardios.forEach { cardio in
-            let title = cardio.exercise.name
+            let title = cardio.name
             // TODO: 0분 이상인 경우만 출력
             let contents = "\(cardio.minutes)분"
             
@@ -38,11 +38,15 @@ class RetrospectViewModel: ObservableObject {
         return retrospects.map { $0.date }
     }
     /// 선택한 날짜가 포함되는 달의 회고 작성수를 반환합니다.
-    func workoutCount(from date: Date, writtenDates: [Date]) -> Int {
+    func retropsectCount(from date: Date, writtenDates: [Date]) -> Int {
         let calendar = Calendar.current
         
         return writtenDates.filter {
             calendar.isDate($0, equalTo: date, toGranularity: .month)
         }.count
+    }
+    /// 유산소, 무산소 운동 데이터 목록이 비어있는지 확인하는 함수입니다.
+    func isWorkoutDataEmpty(from retrospect: Retrospect) -> Bool {
+        return retrospect.anaerobics.count == 0 && retrospect.cardios.count == 0
     }
 }
