@@ -16,7 +16,6 @@ struct SearchView: View {
     @StateObject private var searchVM = SearchViewModel()
     
     @State private var selectedRetrospect: Retrospect? = nil
-    @State private var isPresentingSheet = false
     @State private var modalDate = Date()
 
 
@@ -50,7 +49,6 @@ struct SearchView: View {
                         .onTapGesture {
                             selectedRetrospect = item
                             modalDate = item.date
-                            isPresentingSheet = true
                         }
                         .swipeActions(edge: .leading) { // 오른쪽으로 스와이프해서 북마크
                             Button {
@@ -69,9 +67,9 @@ struct SearchView: View {
                         }
                 }
             }
-            .sheet(isPresented: $isPresentingSheet) {
+            .sheet(item: $selectedRetrospect) { retrospect in
                 NavigationStack {
-                    RetrospectView(retrospect: selectedRetrospect, date: modalDate)
+                    RetrospectView(retrospect: retrospect, date: modalDate)
                 }
             }
 //            .searchable(text: $searchVM.keyword, prompt: "운동 기록을 검색하세요")
