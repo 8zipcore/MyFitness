@@ -68,4 +68,12 @@ final class RetrospectWriteViewModel: ObservableObject {
         try? context.save()
         print(retrospect.anaerobics.count, retrospect.cardios.count)
     }
+
+    func delete(context: ModelContext) {
+        context.delete(retrospect)
+    }
+
+    func insert(context: ModelContext) {
+        context.insert(retrospect)
+    }
 }
