@@ -15,4 +15,16 @@ enum Category: String, CaseIterable, Codable {
     case cardio = "유산소"
     case legs = "다리"
     case butt = "엉덩이"
+    
+    var emoji: String {
+            switch self {
+            case .arms: return "💪"
+            case .chest: return "🦍"
+            case .back: return "🐢"
+            case .shoulders: return "🙆‍♂️"
+            case .cardio: return "🏃"
+            case .legs: return "🦵"
+            case .butt: return "🍑"
+            }
+        }
 }
