@@ -31,28 +31,32 @@ struct MainView: View {
         let isLight = colorScheme == .light
 
         let primaryColor: Color = isLight ? .black : .white
-        let backgroundColor: Color = isLight ? RGB(r: 247, g: 247, b: 247) : .black
+        let backgroundColor: Color = isLight ? RGB(r: 242, g: 242, b: 247) : RGB(r: 28, g: 28, b: 30)
         let toolBarBackgroundColor: Color = isLight ? .black.opacity(0.1) : .white.opacity(0.2)
-        let itemViewBackgroundColor: Color = isLight ? .white : RGB(r: 28, g: 28, b: 30)
+        let itemViewBackgroundColor: Color = isLight ? .white : RGB(r: 44, g: 44, b: 46)
 
         let isRetrospectEmpty = retrospect == nil
-
+        
         ZStack {
             ScrollView {
                 CalendarView(calendarVM: calendarVM, writtenDates: retrospectVM.writtenDates(from: retrospects))
-
+                
                 Group {
                     if let retrospect = retrospect { // 운동 기록 있으면
                         WorkoutItemView(
                             workoutItems: retrospectVM.converToWorkoutItems(from: retrospect),
                             textColor: primaryColor
                         )
-
+                        .contentShape(Rectangle())
+                        .onTapGesture { isPresented = true }
+                        
                         CommentsItemView(
                             date: calendarVM.selectedDate.toString(),
                             comments: retrospect.writing,
                             textColor: primaryColor
                         )
+                        .contentShape(Rectangle())
+                        .onTapGesture { isPresented = true }
                     } else { // 운동 기록 없으면
                         CommentsItemView(
                             date: calendarVM.selectedDate.toString(),
@@ -60,16 +64,26 @@ struct MainView: View {
                             textColor: primaryColor
                         )
                     }
-
+                    
                     HStack {
-                        Text("이번주 운동 횟수")
+                        // 현재 달보다 선택된 날짜가 이전이면
+                        let title = calendarVM.isBeforeCurrentMonth() ? "\(calendarVM.selectedDateMonth)월 운동 횟수" : "이번 달 운동 횟수"
+                        
+                        Text(title)
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundStyle(primaryColor)
-
+                        
                         Spacer()
-
-                        Text("3회")
+                        
+                        let workoutCount = retrospectVM.workoutCount(
+                            from: calendarVM.selectedDate,
+                            writtenDates: retrospectVM.writtenDates(
+                                from: retrospects
+                            )
+                        )
+                        
+                        Text("\(String(workoutCount))회")
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundStyle(primaryColor)
@@ -107,7 +121,7 @@ struct MainView: View {
         }
         .sheet(isPresented: $isPresented) {
             NavigationStack {
-                RetrospectView(isCreate: true)
+                RetrospectView(isCreate: true, retrospect: retrospect)
             }
         }
         .scrollIndicators(.hidden)

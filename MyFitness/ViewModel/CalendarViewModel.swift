@@ -44,6 +44,10 @@ class CalendarViewModel: ObservableObject {
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter.shortWeekdaySymbols
     }
+    /// 선택된 날짜의 달을 나타냅니다.
+    var selectedDateMonth: Int {
+        return Calendar.current.component(.month, from: selectedDate)
+    }
     
     init() {
         self.selectedDate = .now
@@ -120,8 +124,8 @@ class CalendarViewModel: ObservableObject {
     }
     /// selectedDate의 날짜를 지정한 값으로 변경하는 함수입니다.
     func changeDay(_ day: Int) {
-        let currentYear = Calendar.current.component(.year, from: selectedDate)
-        let currentMonth = Calendar.current.component(.month, from: selectedDate)
+        let currentYear = Calendar.current.component(.year, from: currentMonthDate)
+        let currentMonth = Calendar.current.component(.month, from: currentMonthDate)
 
         if let newDate = Calendar.current.date(from: DateComponents(year: currentYear, month: currentMonth, day: day)) {
             selectedDate = newDate
@@ -161,5 +165,51 @@ class CalendarViewModel: ObservableObject {
         }
 
         return calendar.isDate(now, inSameDayAs: targetDate)
+    }
+    /// 주어진 날짜가 선택한 날짜인지 여부를 반환합니다.
+    func isSelectedDay(_ day: Int) -> Bool {
+        let calendar = Calendar.current
+
+        var components = calendar.dateComponents([.year, .month], from: currentMonthDate)
+        components.day = day
+
+        guard let targetDate = calendar.date(from: components) else {
+            return false
+        }
+
+        return calendar.isDate(selectedDate, inSameDayAs: targetDate)
+    }
+    /// 주어진 날짜가 오늘보다 미래인지 여부를 반환합니다.
+    func isFutureDay(_ day: Int) -> Bool {
+        let calendar = Calendar.current
+        let now = Date()
+
+        var components = calendar.dateComponents([.year, .month], from: currentMonthDate)
+        components.day = day
+
+        guard let targetDate = calendar.date(from: components) else {
+            return false
+        }
+
+        return targetDate > now
+    }
+    /// 현재 달보다 이전인지 확인하는 함수입니다.
+    func isBeforeCurrentMonth() -> Bool {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        let currentYear = calendar.component(.year, from: now)
+        let currentMonth = calendar.component(.month, from: now)
+        
+        let targetYear = calendar.component(.year, from: selectedDate)
+        let targetMonth = calendar.component(.month, from: selectedDate)
+        
+        if targetYear < currentYear {
+            return true
+        } else if targetYear == currentYear && targetMonth < currentMonth {
+            return true
+        } else {
+            return false
+        }
     }
 }

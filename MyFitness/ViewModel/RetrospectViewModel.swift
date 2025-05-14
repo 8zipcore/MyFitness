@@ -33,8 +33,16 @@ class RetrospectViewModel: ObservableObject {
         
         return workoutItems
     }
-    
+    /// 회고가 작성된 날짜 Date를 반환하는 함수입니다.
     func writtenDates(from retrospects: [Retrospect]) -> [Date] {
         return retrospects.map { $0.date }
+    }
+    /// 선택한 날짜가 포함되는 달의 회고 작성수를 반환합니다.
+    func workoutCount(from date: Date, writtenDates: [Date]) -> Int {
+        let calendar = Calendar.current
+        
+        return writtenDates.filter {
+            calendar.isDate($0, equalTo: date, toGranularity: .month)
+        }.count
     }
 }
