@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 
-// TODO: 슬라이더
 // TODO: 수정이 잘 안될 가능성이 있음 안된다면 리팩토링 예정
 
 /// 회고 생성, 수정, 삭제 메인 화면
