@@ -26,17 +26,14 @@ struct RetrospectView: View {
     ///   - isCreated: 최초 생성인지 수정인지 Bool값으로 받습니다.
     ///   - retrospect: 만약 수정이라면 회고 데이터를 전달받습니다.
     ///   - date: 최소 생성이라면 Date를 전달받고, 수정이라면 전달받지 않습니다.
-    init(isCreate: Bool, retrospect: Retrospect? = nil, date: Date? = nil) {
+    init(isCreate: Bool, retrospect: Retrospect? = nil, date: Date = .now) {
         self.isCreate = isCreate
 
         if let retrospect = retrospect {
+            retrospect.date = date
             _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel(retrospect: retrospect))
         } else {
-            _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel())
-        }
-
-        if let date = date {
-            viewModel.retrospect.date = date
+            _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel(date: date))
         }
     }
 

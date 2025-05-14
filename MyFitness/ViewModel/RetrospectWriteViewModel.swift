@@ -9,9 +9,9 @@ final class RetrospectWriteViewModel: ObservableObject {
     @Published var categoryList: [Category] = Category.allCases
 
     /// 최초 생성시에 사용되는 생성자입니다.
-    convenience init() {
+    convenience init(date: Date = .now) {
         self.init(retrospect: Retrospect(
-            date: Date.now,
+            date: date,
             category: [],
             anaerobics: [],
             cardios: [],
