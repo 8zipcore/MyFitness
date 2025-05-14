@@ -29,7 +29,7 @@ struct MyFitnessApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                RetrospectView(isCreate: true)
+                MainView()
             }
         }
         .modelContainer(sharedModelContainer)
