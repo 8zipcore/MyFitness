@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// 사용자가 선택할 수 있는 운동 카테고리
 enum Category: String, CaseIterable, Codable {
     case arms = "팔"
     case chest = "가슴"
