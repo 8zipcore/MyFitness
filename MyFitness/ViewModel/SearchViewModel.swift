@@ -61,6 +61,17 @@ final class SearchViewModel: ObservableObject {
             return list.sorted { maxWeight($0) < maxWeight($1) }
         }
     }
+    
+    /// 데이터를 가져와서 retrospect 배열에 넣습니다
+    func loadRetrospects(from context: ModelContext) {
+            /// 기본 정렬 날짜 내림차순(최신순)
+            let descriptor = FetchDescriptor<Retrospect>(
+                sortBy: [ SortDescriptor(\.date, order: .reverse) ]
+            )
+        
+            let results = (try? context.fetch(descriptor)) ?? []
+            self.retrospects = results
+        }
 
     /// 북마크 토글입니다
     func toggleBookmark(_ item: Retrospect, context: ModelContext) {

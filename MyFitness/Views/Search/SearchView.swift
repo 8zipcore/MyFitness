@@ -11,32 +11,33 @@ import SwiftData
 // 검색뷰
 struct SearchView: View {
     @Environment(\.modelContext) var context
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @StateObject private var searchVM = SearchViewModel()
 
-    @Query(sort: [SortDescriptor(\Retrospect.date, order: .reverse)])
+    @Query
     var retrospects: [Retrospect]
 
     var body: some View {
         NavigationStack {
+            List {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(Category.allCases, id: \.self) { category in
+                            CategoryButton(category: category, isSelected: searchVM.selectedCategories.contains(category), toggleAction: {
+                                if searchVM.selectedCategories.contains(category) {
+                                    searchVM.selectedCategories.remove(category)
+                                } else {
+                                    searchVM.selectedCategories.insert(category)
+                                }
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(Category.allCases, id: \.self) { category in
-                        CategoryButton(category: category, isSelected: searchVM.selectedCategories.contains(category), toggleAction: {
-                            if searchVM.selectedCategories.contains(category) {
-                                searchVM.selectedCategories.remove(category)
-                            } else {
-                                searchVM.selectedCategories.insert(category)
-                            }
+                            })
 
-                        })
-
+                        }
                     }
                 }
-            }
-            .padding()
+                .listRowSeparator(.hidden)
+                .padding(.vertical, 6)
 
-            List {
                 ForEach(searchVM.sortedAndFiltered) { item in
                     NavigationLink {
                         RetrospectView(isCreate: false, retrospect: item) // isCreate 호출 안들어감.
@@ -60,9 +61,13 @@ struct SearchView: View {
                     }
                 }
             }
+//            .searchable(text: $searchVM.keyword, prompt: "운동 기록을 검색하세요")
+            .searchable(text: $searchVM.keyword, placement: horizontalSizeClass == .regular ? .navigationBarDrawer(displayMode: .always) : .automatic, prompt: "운동 기록을 검색하세요")
             .listStyle(.plain)
             .navigationTitle("검색")
-            .searchable(text: $searchVM.keyword, prompt: "운동 기록을 검색하세요")
+            .onAppear {
+                searchVM.loadRetrospects(from: context)
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -73,6 +78,8 @@ struct SearchView: View {
                     .tint(.primary)
                 }
             }
+            
+
         }
         Menu {
             ForEach(SearchViewModel.SortOption.allCases) { option in
