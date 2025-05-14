@@ -120,8 +120,8 @@ class CalendarViewModel: ObservableObject {
     }
     /// selectedDate의 날짜를 지정한 값으로 변경하는 함수입니다.
     func changeDay(_ day: Int) {
-        let currentYear = Calendar.current.component(.year, from: selectedDate)
-        let currentMonth = Calendar.current.component(.month, from: selectedDate)
+        let currentYear = Calendar.current.component(.year, from: currentMonthDate)
+        let currentMonth = Calendar.current.component(.month, from: currentMonthDate)
 
         if let newDate = Calendar.current.date(from: DateComponents(year: currentYear, month: currentMonth, day: day)) {
             selectedDate = newDate
@@ -161,5 +161,32 @@ class CalendarViewModel: ObservableObject {
         }
 
         return calendar.isDate(now, inSameDayAs: targetDate)
+    }
+    /// 주어진 날짜가 선택한 날짜인지 여부를 반환합니다.
+    func isSelectedDay(_ day: Int) -> Bool {
+        let calendar = Calendar.current
+
+        var components = calendar.dateComponents([.year, .month], from: currentMonthDate)
+        components.day = day
+
+        guard let targetDate = calendar.date(from: components) else {
+            return false
+        }
+
+        return calendar.isDate(selectedDate, inSameDayAs: targetDate)
+    }
+    /// 주어진 날짜가 오늘보다 미래인지 여부를 반환합니다.
+    func isFutureDay(_ day: Int) -> Bool {
+        let calendar = Calendar.current
+        let now = Date()
+
+        var components = calendar.dateComponents([.year, .month], from: currentMonthDate)
+        components.day = day
+
+        guard let targetDate = calendar.date(from: components) else {
+            return false
+        }
+
+        return targetDate > now
     }
 }
