@@ -123,8 +123,10 @@ struct MainView: View {
             }
         }
         .sheet(isPresented: $isPresented) {
+            // CircleButton -> 생성, retrospect -> 뭐 들어가지?
+            // Contents -> 수정
             NavigationStack {
-                RetrospectView(isCreate: true, retrospect: retrospect, date: calendarVM.selectedDate)
+                RetrospectView(retrospect: retrospect, date: calendarVM.selectedDate)
             }
         }
         .scrollIndicators(.hidden)

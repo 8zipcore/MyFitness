@@ -71,7 +71,7 @@ struct SearchView: View {
             }
             .sheet(isPresented: $isPresentingSheet) {
                 NavigationStack {
-                    RetrospectView(isCreate: false, retrospect: selectedRetrospect, date: modalDate)
+                    RetrospectView(retrospect: selectedRetrospect, date: modalDate)
                 }
             }
 //            .searchable(text: $searchVM.keyword, prompt: "운동 기록을 검색하세요")

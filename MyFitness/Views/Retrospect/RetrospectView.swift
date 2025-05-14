@@ -19,21 +19,20 @@ struct RetrospectView: View {
     @StateObject var viewModel: RetrospectWriteViewModel
     @FocusState private var isFocused: Bool
 
-    let isCreate: Bool
+    var isCreate: Bool = false
 
     /// RetrospectView 생성자
     /// - Parameters:
     ///   - isCreated: 최초 생성인지 수정인지 Bool값으로 받습니다.
     ///   - retrospect: 만약 수정이라면 회고 데이터를 전달받습니다.
     ///   - date: 최소 생성이라면 Date를 전달받고, 수정이라면 전달받지 않습니다.
-    init(isCreate: Bool, retrospect: Retrospect? = nil, date: Date = .now) {
-        self.isCreate = isCreate
-
+    init(retrospect: Retrospect? = nil, date: Date = .now) {
         if let retrospect = retrospect {
-            retrospect.date = date
             _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel(retrospect: retrospect))
+            isCreate = false
         } else {
             _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel(date: date))
+            isCreate = true
         }
     }
 
@@ -369,13 +368,13 @@ struct addCustomExerciseView: View {
 // MARK: - Preview
 #Preview("수정 화면") {
     NavigationStack {
-        RetrospectView(isCreate: false, retrospect: Retrospect(date: .now, category: [.arms], anaerobics: [Anaerobic(name: "데드 리프트", weight: 65, count: 10, set: 5)], cardios: [Cardio(name: "런닝", minutes: 30)], startTime: .now, finishTime: .now, satisfaction: 50, writing: "감사합니다", bookMark: false))
+        RetrospectView(retrospect: Retrospect(date: .now, category: [.arms], anaerobics: [Anaerobic(name: "데드 리프트", weight: 65, count: 10, set: 5)], cardios: [Cardio(name: "런닝", minutes: 30)], startTime: .now, finishTime: .now, satisfaction: 50, writing: "감사합니다", bookMark: false))
     }
 }
 
 #Preview("생성 화면") {
     NavigationStack {
-        RetrospectView(isCreate: true)
+        RetrospectView()
     }
 }
 
