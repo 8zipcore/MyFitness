@@ -44,6 +44,10 @@ class CalendarViewModel: ObservableObject {
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter.shortWeekdaySymbols
     }
+    /// 선택된 날짜의 달을 나타냅니다.
+    var selectedDateMonth: Int {
+        return Calendar.current.component(.month, from: selectedDate)
+    }
     
     init() {
         self.selectedDate = .now
@@ -188,5 +192,24 @@ class CalendarViewModel: ObservableObject {
         }
 
         return targetDate > now
+    }
+    /// 현재 달보다 이전인지 확인하는 함수입니다.
+    func isBeforeCurrentMonth() -> Bool {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        let currentYear = calendar.component(.year, from: now)
+        let currentMonth = calendar.component(.month, from: now)
+        
+        let targetYear = calendar.component(.year, from: selectedDate)
+        let targetMonth = calendar.component(.month, from: selectedDate)
+        
+        if targetYear < currentYear {
+            return true
+        } else if targetYear == currentYear && targetMonth < currentMonth {
+            return true
+        } else {
+            return false
+        }
     }
 }
