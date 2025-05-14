@@ -9,39 +9,57 @@ import SwiftUI
 import SwiftData
 
 struct RetrospectView: View {
-	// MARK: SwiftData Context
+    // MARK: SwiftData Context
     @Environment(\.modelContext) var context
+    @Environment(\.dismiss) var dismiss
 
-    // MARK: retrospect가 nil이면 생성, 존재한다면 수정 로직을 진행합니다.
-    var retrospect: Retrospect?
+    @StateObject var viewModel: RetrospectWriteViewModel
+    @FocusState private var isFocused: Bool
 
-    @State private var anaerobics: [Anaerobic] = []
-    @State private var cardios: [Cardio] = []
-    @State private var satisfaction: Int = 0
-    @State private var startTime: Date = .now
-    @State private var finishTime: Date = .now
-    @State private var writing: String = ""
-    @State private var categoryList: [Category] = Category.allCases
-    @State private var selectedCategoryList: [Category] = []
+    let isCreate: Bool
+
+    /// RetrospectView 생성자
+    /// - Parameters:
+    ///   - isCreated: 최초 생성인지 수정인지 Bool값으로 받습니다.
+    ///   - retrospect: 만약 수정이라면 회고 데이터를 전달받습니다.
+    ///   - date: 최소 생성이라면 Date를 전달받고, 수정이라면 전달받지 않습니다.
+    init(isCreate: Bool, retrospect: Retrospect? = nil, date: Date? = nil) {
+        self.isCreate = isCreate
+
+        if let retrospect = retrospect {
+            _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel(retrospect: retrospect))
+        } else {
+            _viewModel = StateObject(wrappedValue: RetrospectWriteViewModel())
+        }
+
+        if let date = date {
+            viewModel.retrospect.date = date
+        }
+    }
 
     var body: some View {
         Form {
+            //Section {
+            //    DatePicker("설정 날짜", selection: $viewModel.retrospect.date, displayedComponents: [.date])
+            //        .datePickerStyle(.graphical)
+            //}
+
             Section("카테고리") {
-                List($categoryList, id: \.self) { category in
+                List($viewModel.categoryList, id: \.self) { category in
                     HStack {
                         Text(category.wrappedValue.rawValue)
                         Spacer()
-                        if selectedCategoryList.contains(category.wrappedValue) {
+                        if viewModel.retrospect.category.contains(category.wrappedValue) {
                             Image(systemName: "checkmark")
                                 .foregroundStyle(.blue)
                         }
                     }
-                    .contentShape(Rectangle()) // 제스쳐 범위 늘리기
+                    .contentShape(Rectangle())
                     .onTapGesture {
-                        if selectedCategoryList.contains(category.wrappedValue) {
-                            selectedCategoryList = selectedCategoryList.filter { $0 != category.wrappedValue }
+                        if viewModel.retrospect.category.contains(category.wrappedValue) {
+                            viewModel.retrospect.category = viewModel.retrospect.category.filter { $0 != category.wrappedValue }
                         } else {
-                            selectedCategoryList.append(category.wrappedValue)
+                            viewModel.retrospect.category.append(category.wrappedValue)
                         }
                     }
                 }
@@ -49,31 +67,32 @@ struct RetrospectView: View {
 
             Section("무산소 운동") {
                 List {
-                    ForEach($anaerobics) { $anaerobic in
+                    ForEach($viewModel.retrospect.anaerobics) { $anaerobic in
                         AnaerobicView(anaerobic: $anaerobic)
                     }
                     .onDelete { indexPath in
-                        anaerobics.remove(atOffsets: indexPath)
+                        viewModel.retrospect.anaerobics.remove(atOffsets: indexPath)
                     }
                 }
 
                 Button {
-                    anaerobics.append(Anaerobic(exercise: Exercise(name: ""), weight: 0, count: 0, set: 0))
+                    viewModel.retrospect.anaerobics.append(Anaerobic.emptyData())
                 } label: {
                     Label("추가", systemImage: "plus")
                 }
             }
+
             Section("유산소 운동") {
                 List {
-                    ForEach($cardios) { $cardio in
+                    ForEach($viewModel.retrospect.cardios) { $cardio in
                         CardioView(cardio: $cardio)
                     }
                     .onDelete { indexPath in
-                        cardios.remove(atOffsets: indexPath)
+                        viewModel.retrospect.cardios.remove(atOffsets: indexPath)
                     }
                 }
                 Button {
-                    cardios.append(Cardio(exercise: Exercise(name: ""), minutes: 0))
+                    viewModel.retrospect.cardios.append(Cardio.emptyData())
                 } label: {
                     Label("추가", systemImage: "plus")
                 }
@@ -82,7 +101,7 @@ struct RetrospectView: View {
                 HStack {
                     Text("금일 운동은 어땠나요?")
                     Spacer()
-                    Picker("", selection: $satisfaction) {
+                    Picker("", selection: $viewModel.retrospect.satisfaction) {
                         ForEach(Array(stride(from: 0, through: 100, by: 10)), id: \.self) { number in
                             Text("\(number)%")
                         }
@@ -95,8 +114,9 @@ struct RetrospectView: View {
                     HStack {
                         Text("시작 시간")
                         Spacer()
-                        DatePicker("시간 선택", selection: $startTime, displayedComponents: .hourAndMinute)
-                            .datePickerStyle(.graphical) // 또는 .compact, .graphical
+                        DatePicker("시간 선택", selection: $viewModel.retrospect.startTime, displayedComponents:
+                                .hourAndMinute)
+                        	.datePickerStyle(.graphical) // 또는 .compact, .graphical
                             .labelsHidden()
                             .frame(width: 200, height: 30)
                     }
@@ -104,86 +124,79 @@ struct RetrospectView: View {
                     HStack {
                         Text("종료 시간")
                         Spacer()
-                        DatePicker("시간 선택", selection: $finishTime, displayedComponents: .hourAndMinute)
-                            .datePickerStyle(.graphical) // 또는 .compact, .graphical
+                        DatePicker("시간 선택", selection: $viewModel.retrospect.finishTime, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.graphical)
                             .labelsHidden()
                             .frame(width: 200, height: 30)
                     }
 
                 }
             }
-
             Section("회고") {
-                TextEditor(text: $writing)
+                TextEditor(text: $viewModel.retrospect.writing)
+                    .submitLabel(.continue)
+                    .autocorrectionDisabled(false)
+                    .textInputAutocapitalization(.never)
+                    .focused($isFocused)
+                    .onSubmit {
+                        isFocused = false
+                    }
                     .frame(minHeight: 150)
+                    .overlay {
+                        if !isFocused && viewModel.retrospect.writing.isEmpty {
+                            Text("금일 운동의 회고를 적어주세요!")
+                                .foregroundStyle(.gray)
+                        }
+                    }
             }
+        }
+        .alert("경고", isPresented: $viewModel.isInvalidDate) {
+            Button("확인") {
 
-            Section {
-                HStack {
-                    Spacer()
-                    Text(retrospect == nil ? "저장" : "수정")
-                        .foregroundStyle(.blue)
-                    Spacer()
-                }
             }
+        } message: {
+            Text("운동 시간이 잘못 입력되었습니다.")
+        }
+        .alert("경고", isPresented: $viewModel.isInvalidExercise) {
+            Button("확인") {
+
+            }
+        } message: {
+            Text("선택하지 않은 운동이 존재합니다.")
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    // TODO: PM -> AM 으로 넘어갈 때 시간 오차를 수정해야 합니다.
-                    // MARK: 저장할 때 운동 시간 검증을 해야 합니다.
-                    guard isValidTime(from: startTime, to: finishTime) else {
-                        // MARK: 검증 실패
-                        print("검증 실패")
+                    viewModel.checkPMtoAMTime()
+
+                    guard viewModel.isValidDate() else {
+                        viewModel.isInvalidDate = true
                         return
                     }
 
-                    // TODO: 운동명을 기입했는지 검증을 해야 합니다.
+                    guard viewModel.isValidExercise() else {
+                        viewModel.isInvalidExercise = true
+                        return
+                    }
 
-                    // TODO: 저장 및 수정을 분기해야 합니다.
+                    if isCreate {
+						// MARK: Retrospect 데이터 Create
+                        context.insert(viewModel.retrospect)
+                    }
 
-                    let retrospect = Retrospect(
-                        date: .now,
-                        category: selectedCategoryList,
-                        anaerobics: anaerobics,
-                        cardios: cardios,
-                        startTime: startTime,
-                        finishTime: finishTime,
-                        satisfaction: Double(satisfaction),
-                        writing: writing,
-                        bookMark: false
-                    )
-
-                    print(
-                        retrospect.category,
-                        retrospect.anaerobics,
-                        retrospect.cardios,
-                        retrospect.startTime,
-                        retrospect.finishTime,
-                        retrospect.satisfaction,
-                        retrospect.writing,
-                        retrospect.bookMark
-                    )
+                    viewModel.save(context: context)
+                    dismiss()
                 } label: {
-                    Text(retrospect == nil ? "저장" : "수정")
+                    Text(isCreate == true ? "저장" : "수정")
                 }
             }
         }
         .navigationTitle("운동 기록")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
-    /// 날짜 차이에 따라서 Bool값을 반환합니다.
-    /// - Parameters:
-    ///   - date1: 시작 시간
-    ///   - date2: 종료 시간
-    /// - Returns: 시간 시간이 종료시간보다 작거나 같다면 true, 더 크다면 false를 반환합니다.
-    func isValidTime(from date1: Date, to date2: Date) -> Bool {
-        return date1 <= date2
-    }
 }
 
-// MARK: 무산소 View
+/// 무산소 운동을 추가할 때 나타나는 화면
 struct AnaerobicView: View {
     @Binding var anaerobic: Anaerobic
     @State private var showSearchView: Bool = false
@@ -238,7 +251,7 @@ struct AnaerobicView: View {
     }
 }
 
-// MARK: 유산소 View
+/// 유산소 운동을 추가할 때 나타나는 화면
 struct CardioView: View {
     @Binding var cardio: Cardio
     @State private var showSearchView: Bool = false
@@ -267,7 +280,8 @@ struct CardioView: View {
     }
 }
 
-// MARK: 운동 검색 View
+
+/// 유저가 세부 운동을 검색할 수 있는 화면
 struct SearchExerciseView: View {
     @Query(sort: [SortDescriptor(\Exercise.name, order: .forward)])
     var exercises: [Exercise]
@@ -290,13 +304,26 @@ struct SearchExerciseView: View {
 
     var body: some View {
         List {
+            Section {
+                addCustomExerciseView()
+            }
+
             ForEach(filteredExercise) { exercise in
-                Text(exercise.name)
-                    .onTapGesture {
-                        print(exercise.name)
-                        name = exercise.name
-                        dismiss()
-                    }
+                HStack {
+                    Text(exercise.name)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                }
+                .onTapGesture {
+                    name = exercise.name
+                    dismiss()
+                }
+            }
+            .onDelete { indexSet in
+                // MARK: Exercise 데이터 Delete
+                for index in indexSet {
+                    context.delete(exercises[index])
+                }
             }
         }
         .navigationTitle("운동 검색")
@@ -304,10 +331,37 @@ struct SearchExerciseView: View {
     }
 }
 
+/// 유저가 직접 운동을 추가할 수 있는 화면
+struct addCustomExerciseView: View {
+    @State private var exerciseLabel: String = ""
+    @Environment(\.modelContext) var context
+
+    var body: some View {
+        HStack {
+            TextField("원하시는 운동을 추가 하세요", text: $exerciseLabel)
+            Spacer()
+            Button {
+                // MARK: Exercise 데이터 Insert
+                guard !exerciseLabel.isEmpty else { return }
+                let exercise = Exercise(name: exerciseLabel)
+                context.insert(exercise)
+            } label: {
+                Image(systemName: "plus")
+            }
+        }
+    }
+}
+
 // MARK: - Preview
-#Preview {
+#Preview("수정 화면") {
     NavigationStack {
-        RetrospectView()
+        RetrospectView(isCreate: false, retrospect: Retrospect(date: .now, category: [.arms], anaerobics: [Anaerobic(exercise: Exercise(name: "데드 리프트"), weight: 65, count: 10, set: 5)], cardios: [Cardio(exercise: Exercise(name: "런닝머신"), minutes: 30)], startTime: .now, finishTime: .now, satisfaction: 50, writing: "감사합니다", bookMark: false))
+    }
+}
+
+#Preview("생성 화면") {
+    NavigationStack {
+        RetrospectView(isCreate: true)
     }
 }
 
@@ -332,5 +386,4 @@ struct SearchExerciseView: View {
             .modelContainer(container)
     }
 }
-
 

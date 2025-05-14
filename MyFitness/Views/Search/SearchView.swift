@@ -14,7 +14,6 @@ struct SearchView: View {
     var retrospects: [Retrospect]
     
     var exampleList: [Retrospect] = [
-        
         Retrospect(date: .now, category: [.arms], anaerobics: [Anaerobic(exercise: Exercise(name: "레그 익스프레스"), weight: 50, count: 3, set: 10)], cardios: [Cardio(exercise: Exercise(name: "달리기"), minutes: 30)], startTime: .now, finishTime: .now + 1800, satisfaction: 70, writing: "오늘 화이팅", bookMark: true),
         
         Retrospect(date: .now - 86400, category: [.chest], anaerobics: [Anaerobic(exercise: Exercise(name: "벤치 프레스"), weight: 80, count: 8, set: 3)], cardios: [], startTime: .now, finishTime: .now + 2400, satisfaction: 85, writing: "가슴 운동 느낌 좋음", bookMark: true),
@@ -34,10 +33,6 @@ struct SearchView: View {
         Retrospect(date: .now - 8 * 86400, category: [.cardio], anaerobics: [], cardios: [Cardio(exercise: Exercise(name: "자전거 타기"), minutes: 50)], startTime: .now, finishTime: .now + 3000, satisfaction: 55, writing: "날씨 좋아서 좋았음", bookMark: false),
         
         Retrospect(date: .now - 9 * 86400, category: [.legs], anaerobics: [Anaerobic(exercise: Exercise(name: "레그 프레스"), weight: 100, count: 8, set: 4)], cardios: [], startTime: .now, finishTime: .now + 2500, satisfaction: 95, writing: "기록 경신!", bookMark: true)
-        
-        
-        
-        
     ]
     
     

@@ -13,13 +13,18 @@ import SwiftData
 final class Retrospect {
     @Attribute(.unique) var id: UUID
     var date: Date
-    var category: [Category] // MARK: Category로 변경
+    var category: [Category]
+
+    @Relationship(deleteRule: .cascade)
     var anaerobics: [Anaerobic]
+
+    @Relationship(deleteRule: .cascade)
     var cardios: [Cardio]
-    var startTime: Date // MARK: 변경
-    var finishTime: Date // MARK: 변경
-    var satisfaction: Double
-    var writing: String // TODO: 이름이 애매함.
+
+    var startTime: Date
+    var finishTime: Date
+    var satisfaction: Int
+    var writing: String
     var bookMark: Bool = false
 
     init(
@@ -30,7 +35,7 @@ final class Retrospect {
         cardios: [Cardio],
         startTime: Date,
         finishTime: Date,
-        satisfaction: Double,
+        satisfaction: Int,
         writing: String,
         bookMark: Bool
     ) {
@@ -63,6 +68,12 @@ final class Anaerobic {
         self.count = count
         self.set = set
     }
+
+    /// Retrospect 화면에서 "무산소 운동 추가" 에서 사용됩니다.
+    /// - Returns: 초기 값의 Anaerobic 객체가 반환됩니다.
+    static func emptyData() -> Anaerobic {
+        return Anaerobic(exercise: Exercise(name: ""), weight: 0, count: 0, set: 0)
+    }
 }
 
 // MARK: Cardio (유산소 데이터 스키마)
@@ -76,6 +87,12 @@ final class Cardio {
         self.id = id
         self.exercise = exercise
         self.minutes = minutes
+    }
+    
+    /// Retrospect 화면에서 "유산소 운동 추가" 에서 사용됩니다.
+    /// - Returns: 초기 값의 Cardio 객체가 반환됩니다.
+    static func emptyData() -> Cardio {
+        return Cardio(exercise: Exercise(name: ""), minutes: 0)
     }
 }
 
