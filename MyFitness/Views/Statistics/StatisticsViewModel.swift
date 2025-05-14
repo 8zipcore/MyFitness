@@ -20,7 +20,11 @@ final class StatisticsViewModel: ObservableObject {
         cardioMaxCount = cardioCounts.max { $0.count < $1.count }?.count ?? 0
     }
 
-    func setPeriodTime(retrospects: [Retrospect]) {
+    func getCategoryCount(retrospects: [Retrospect], category: Category) -> Int {
+        return retrospects.flatMap { $0.category.filter { $0 == category } }.count
+    }
+
+    private func setPeriodTime(retrospects: [Retrospect]) {
         let calendar = Calendar.current
 
         let grouped = Dictionary(grouping: retrospects) { retrospect -> Period in
@@ -42,19 +46,15 @@ final class StatisticsViewModel: ObservableObject {
         self.periodTimes = periodTimes
     }
 
-    func getCategoryCount(retrospects: [Retrospect], category: Category) -> Int {
-        return retrospects.flatMap { $0.category.filter { $0 == category } }.count
-    }
-
-    func setAnaerobicTotalCount(retrospects: [Retrospect]) {
+    private func setAnaerobicTotalCount(retrospects: [Retrospect]) {
         self.anaerobicTotalCount = retrospects.map { $0.anaerobics.map { $0.name }.count }.count
     }
 
-    func setCardioTotalCount(retrospects: [Retrospect]) {
+    private func setCardioTotalCount(retrospects: [Retrospect]) {
         self.cardioTotalCount = retrospects.map { $0.cardios.map { $0.name }.count }.count
     }
 
-    func setAnaerobicCount(retrospects: [Retrospect]) {
+    private func setAnaerobicCount(retrospects: [Retrospect]) {
         var anaerobicCountList: [ExerciseCount] = []
         retrospects.flatMap { $0.anaerobics }.map { $0.name }.reduce(into: [:]) { results, name in
             results[name, default: 0] += 1
@@ -69,7 +69,7 @@ final class StatisticsViewModel: ObservableObject {
         self.anaerobicCounts = anaerobicCountList
     }
 
-    func setCardioCount(retrospects: [Retrospect]) {
+    private func setCardioCount(retrospects: [Retrospect]) {
         var cardioCountList: [ExerciseCount] = []
         retrospects.flatMap { $0.cardios }.map { $0.name }.reduce(into: [:]) { results, name in
             results[name, default: 0] += 1

@@ -94,6 +94,7 @@ struct StatisticsView: View {
 
             Section {
                 // MARK: - 원형 프로그레스바 완성
+                Text("카테고리별 운동 횟수")
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(Category.allCases, id: \.self) { category in
