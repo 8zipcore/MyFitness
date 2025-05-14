@@ -41,9 +41,12 @@ struct SearchView: View {
                         }
                     }
                 }
+                .onAppear {
+                    searchVM.loadRetrospects(from: context)
+                }
                 .listRowSeparator(.hidden)
                 .padding(.vertical, 6)
-
+                // 아이템 누르면 저장 뜨고 카테고리 누르고 누르면 삭제수정 뜨는 issue
                 ForEach(searchVM.sortedAndFiltered) { item in
                     ListItemView(item: item)
                         .contentShape(Rectangle())
@@ -63,24 +66,25 @@ struct SearchView: View {
                         .swipeActions(edge: .trailing) { // 왼쪽으로 스와이프해서 삭제
                             Button(role: .destructive) {
                                 searchVM.delete(item, context: context)
+                                
                             } label: {
                                 Image(systemName: "trash")
                             }
                         }
                 }
             }
+            
             .sheet(isPresented: $isPresentingSheet) {
                 NavigationStack {
                     RetrospectView(isCreate: false, retrospect: selectedRetrospect, date: modalDate)
                 }
             }
 //            .searchable(text: $searchVM.keyword, prompt: "운동 기록을 검색하세요")
-            .searchable(text: $searchVM.keyword, placement: horizontalSizeClass == .regular ? .navigationBarDrawer(displayMode: .always) : .automatic, prompt: "운동 기록을 검색하세요")
+//            .searchable(text: $searchVM.keyword, placement: horizontalSizeClass == .compact ? .navigationBarDrawer(displayMode: .always) : .navigationBarDrawer(displayMode: .always), prompt: "운동 기록을 검색하세요")
+            .searchable(text: $searchVM.keyword, placement: .navigationBarDrawer(displayMode: .always), prompt: "운동 기록을 검색하세요")
             .listStyle(.plain)
             .navigationTitle("검색")
-            .onAppear {
-                searchVM.loadRetrospects(from: context)
-            }
+            
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
