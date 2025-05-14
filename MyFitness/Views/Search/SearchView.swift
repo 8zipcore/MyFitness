@@ -84,7 +84,6 @@ struct SearchView: View {
             .searchable(text: $searchVM.keyword, placement: .navigationBarDrawer(displayMode: .always), prompt: "운동 기록을 검색하세요")
             .listStyle(.plain)
             .navigationTitle("검색")
-            
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
