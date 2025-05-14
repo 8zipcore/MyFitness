@@ -82,7 +82,12 @@ final class SearchViewModel: ObservableObject {
     /// 회고록 삭제입니다
     func delete(_ item: Retrospect, context: ModelContext) {
         context.delete(item)
-        try? context.save()
+        do {
+            try context.save()
+            loadRetrospects(from: context)
+        } catch {
+            print("삭제 실패", error)
+        }
     }
 
     
