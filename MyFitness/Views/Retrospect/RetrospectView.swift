@@ -8,6 +8,9 @@
 import SwiftUI
 import SwiftData
 
+// TODO: 스키마 -> 슬라이더
+// TODO: 수정이 잘 안될 가능성이 있음 안된다면 리팩토링 예정
+
 struct RetrospectView: View {
     // MARK: SwiftData Context
     @Environment(\.modelContext) var context
@@ -129,7 +132,6 @@ struct RetrospectView: View {
                             .labelsHidden()
                             .frame(width: 200, height: 30)
                     }
-
                 }
             }
             Section("회고") {
@@ -181,13 +183,26 @@ struct RetrospectView: View {
 
                     if isCreate {
 						// MARK: Retrospect 데이터 Create
-                        context.insert(viewModel.retrospect)
+                        viewModel.insert(context: context)
                     }
-
+					// MARK: Retrospect 명시적 저장
                     viewModel.save(context: context)
                     dismiss()
                 } label: {
                     Text(isCreate == true ? "저장" : "수정")
+                }
+            }
+
+            if !isCreate {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        // MARK: Retrospect 데이터 삭제
+                        viewModel.delete(context: context)
+                        dismiss()
+                    } label: {
+                        Text("삭제")
+                            .foregroundStyle(.red)
+                    }
                 }
             }
         }
@@ -245,7 +260,7 @@ struct AnaerobicView: View {
         }
         .sheet(isPresented: $showSearchView) {
             NavigationStack {
-                SearchExerciseView(name: $anaerobic.exercise.name)
+                SearchExerciseView(name: $anaerobic.exercise.name, exerciseType: .anaerobic)
             }
         }
     }
@@ -274,7 +289,7 @@ struct CardioView: View {
         }
         .sheet(isPresented: $showSearchView) {
             NavigationStack {
-                SearchExerciseView(name: $cardio.exercise.name)
+                SearchExerciseView(name: $cardio.exercise.name, exerciseType: .cardio)
             }
         }
     }
@@ -292,20 +307,22 @@ struct SearchExerciseView: View {
     @State var keyword: String = ""
     @Binding var name: String
 
+    let exerciseType: ExerciseType
+
     var filteredExercise: [Exercise] {
         if keyword.isEmpty {
-            return exercises
+            return exercises.filter { $0.exerciseType == exerciseType }
         }
 
         return exercises.filter {
-            $0.name.lowercased().contains(keyword.lowercased())
+            $0.exerciseType == exerciseType && $0.name.lowercased().contains(keyword.lowercased())
         }
     }
 
     var body: some View {
         List {
             Section {
-                addCustomExerciseView()
+                addCustomExerciseView(exerciseType: exerciseType)
             }
 
             ForEach(filteredExercise) { exercise in
@@ -327,7 +344,7 @@ struct SearchExerciseView: View {
             }
         }
         .navigationTitle("운동 검색")
-        .searchable(text: $keyword, prompt: "운동을 검색하세요")
+        .searchable(text: $keyword, prompt: "\(exerciseType == .cardio ? "유산소" : "무산소") 운동을 검색하세요")
     }
 }
 
@@ -336,6 +353,8 @@ struct addCustomExerciseView: View {
     @State private var exerciseLabel: String = ""
     @Environment(\.modelContext) var context
 
+    var exerciseType: ExerciseType
+
     var body: some View {
         HStack {
             TextField("원하시는 운동을 추가 하세요", text: $exerciseLabel)
@@ -343,8 +362,9 @@ struct addCustomExerciseView: View {
             Button {
                 // MARK: Exercise 데이터 Insert
                 guard !exerciseLabel.isEmpty else { return }
-                let exercise = Exercise(name: exerciseLabel)
+                let exercise = Exercise(name: exerciseLabel, exerciseType: exerciseType)
                 context.insert(exercise)
+                exerciseLabel = ""
             } label: {
                 Image(systemName: "plus")
             }
@@ -355,7 +375,7 @@ struct addCustomExerciseView: View {
 // MARK: - Preview
 #Preview("수정 화면") {
     NavigationStack {
-        RetrospectView(isCreate: false, retrospect: Retrospect(date: .now, category: [.arms], anaerobics: [Anaerobic(exercise: Exercise(name: "데드 리프트"), weight: 65, count: 10, set: 5)], cardios: [Cardio(exercise: Exercise(name: "런닝머신"), minutes: 30)], startTime: .now, finishTime: .now, satisfaction: 50, writing: "감사합니다", bookMark: false))
+        RetrospectView(isCreate: false, retrospect: Retrospect(date: .now, category: [.arms], anaerobics: [Anaerobic(exercise: Exercise(name: "데드 리프트", exerciseType: .anaerobic), weight: 65, count: 10, set: 5)], cardios: [Cardio(exercise: Exercise(name: "런닝머신", exerciseType: .cardio), minutes: 30)], startTime: .now, finishTime: .now, satisfaction: 50, writing: "감사합니다", bookMark: false))
     }
 }
 
@@ -370,9 +390,9 @@ struct addCustomExerciseView: View {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try! ModelContainer(for: Exercise.self, configurations: config)
 
-        let exercise1 = Exercise(name: "벤치 프레스")
-        let exercise2 = Exercise(name: "데드 리프트")
-        let exercise3 = Exercise(name: "스쿼트")
+        let exercise1 = Exercise(name: "벤치 프레스", exerciseType: .anaerobic)
+        let exercise2 = Exercise(name: "데드 리프트", exerciseType: .anaerobic)
+        let exercise3 = Exercise(name: "스쿼트", exerciseType: .anaerobic)
 
         container.mainContext.insert(exercise1)
         container.mainContext.insert(exercise2)
@@ -382,7 +402,7 @@ struct addCustomExerciseView: View {
     }()
 
     NavigationStack {
-        SearchExerciseView(name: .constant("테스트"))
+        SearchExerciseView(name: .constant("테스트"), exerciseType: .cardio)
             .modelContainer(container)
     }
 }
