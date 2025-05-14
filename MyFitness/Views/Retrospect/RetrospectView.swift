@@ -97,14 +97,15 @@ struct RetrospectView: View {
                 }
             }
             Section("성취도") {
-                HStack {
-                    Text("금일 운동은 어땠나요?")
-                    Spacer()
-                    Picker("", selection: $viewModel.retrospect.satisfaction) {
-                        ForEach(Array(stride(from: 0, through: 100, by: 10)), id: \.self) { number in
-                            Text("\(number)%")
-                        }
+                VStack {
+                    HStack {
+                        Text("금일 운동은 어땠나요?")
+                        Spacer()
+                        Text("\(Int(viewModel.retrospect.satisfaction))%")
                     }
+
+
+                    Slider(value: $viewModel.retrospect.satisfaction, in: 0...100, step: 5)
                 }
             }
 
@@ -271,16 +272,19 @@ struct CardioView: View {
         HStack {
             Text(cardio.exercise.name == "" ? "운동명" : cardio.exercise.name)
                 .foregroundStyle(.gray)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
                 .onTapGesture {
-                    print("show")
                     showSearchView = true
                 }
             Spacer()
             Picker("", selection: $cardio.minutes) {
-                ForEach(0..<200, id: \.self) { number in
+                ForEach(0..<201, id: \.self) { number in
                     Text("\(number)")
                 }
             }
+            .labelsHidden()
+            .clipped()
             Text("분")
         }
         .sheet(isPresented: $showSearchView) {
