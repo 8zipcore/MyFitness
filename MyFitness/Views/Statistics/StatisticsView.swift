@@ -124,8 +124,7 @@ struct StatisticsView: View {
                                 Text("\(exercise.name)")
                                     .font(.callout)
                                 HStack {
-                                    // TODO: 최대 개수 구해서 하기, 정렬
-                                    ProgressView(value: Double(exercise.count), total: 2)
+                                    ProgressView(value: Double(exercise.count), total: Double(viewModel.anaerobicMaxCount))
                                         .accentColor(.blue)
                                         .background(.clear)
                                         .frame(maxWidth: 200)
@@ -168,8 +167,7 @@ struct StatisticsView: View {
                                 Text("\(exercise.name)")
                                     .font(.callout)
                                 HStack {
-                                    // TODO: 최대 개수 구해서 하기, 정렬
-                                    ProgressView(value: Double(exercise.count), total: 2)
+                                    ProgressView(value: Double(exercise.count), total: Double(viewModel.cardioMaxCount))
                                         .accentColor(.blue)
                                         .background(.clear)
                                         .frame(maxWidth: 200)

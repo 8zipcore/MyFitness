@@ -6,6 +6,8 @@ final class StatisticsViewModel: ObservableObject {
     @Published var cardioCounts: [ExerciseCount] = []
     @Published var anaerobicTotalCount: Int = 0
     @Published var cardioTotalCount: Int = 0
+    @Published var anaerobicMaxCount: Int = 0
+    @Published var cardioMaxCount: Int = 0
 
     func setData(retrospects: [Retrospect]) {
         setPeriodTime(retrospects: retrospects)
@@ -13,6 +15,9 @@ final class StatisticsViewModel: ObservableObject {
         setAnaerobicCount(retrospects: retrospects)
         setCardioTotalCount(retrospects: retrospects)
         setAnaerobicTotalCount(retrospects: retrospects)
+
+        anaerobicMaxCount = anaerobicCounts.max { $0.count < $1.count }?.count ?? 0
+        cardioMaxCount = cardioCounts.max { $0.count < $1.count }?.count ?? 0
     }
 
     func setPeriodTime(retrospects: [Retrospect]) {
@@ -38,7 +43,7 @@ final class StatisticsViewModel: ObservableObject {
     }
 
     func getCategoryCount(retrospects: [Retrospect], category: Category) -> Int {
-        return retrospects.flatMap { $0.category.filter { $0 == category} }.count
+        return retrospects.flatMap { $0.category.filter { $0 == category } }.count
     }
 
     func setAnaerobicTotalCount(retrospects: [Retrospect]) {
