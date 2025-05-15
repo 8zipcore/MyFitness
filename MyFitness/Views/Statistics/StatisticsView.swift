@@ -53,7 +53,7 @@ struct StatisticsView: View {
             Section {
                 WorkoutTimeChartView(
                     viewModel: viewModel,
-                    retrospects: exampleList,
+                    retrospects: retrospects,
                     weekOrMonth: viewModel.weekOrMonth
                 )
             }

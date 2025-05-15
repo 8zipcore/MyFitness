@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 
+
 final class SearchViewModel: ObservableObject {
     @Published var keyword: String = ""
     @Published var selectedCategories: Set<Category> = []
@@ -24,7 +25,7 @@ final class SearchViewModel: ObservableObject {
     }
     
     /// 필터링 해서 표시해줄 배열입니다
-    private var filteredRetrospects: [Retrospect] {
+    var filteredRetrospects: [Retrospect] {
         let filtered = retrospects.filter { restro in
             /// 검색 키워드
             let matchesKeyword = keyword.isEmpty || restro.writing.lowercased().contains(keyword.lowercased())
@@ -40,9 +41,28 @@ final class SearchViewModel: ObservableObject {
         
         return filtered
     }
-    
     /// 리스트를 sort 해서 표시해줄 배열입니다.
-    @Published var sortedAndFiltered: [Retrospect] = []
+    var sortedAndFiltered: [Retrospect] {
+        let list = filteredRetrospects
+        var newList: [Retrospect] = []
+        
+        switch selectedSort {
+        case .dateDesc:
+            newList = list.sorted { $0.date > $1.date }
+        case .dateAsc:
+            newList = list.sorted { $0.date < $1.date }
+        case .satisfactionDesc:
+            newList = list.sorted { $0.satisfaction > $1.satisfaction }
+        case .satisfactionAsc:
+            newList = list.sorted { $0.satisfaction < $1.satisfaction }
+        case .weightDesc:
+            newList = list.sorted { maxWeight($0) > maxWeight($1) }
+        case .weightAsc:
+            newList = list.sorted { maxWeight($0) < maxWeight($1) }
+        }
+        
+        return newList
+    }
     
     /// 데이터를 가져와서 retrospect 배열에 넣습니다
     func loadRetrospects(from context: ModelContext) {
@@ -87,28 +107,5 @@ final class SearchViewModel: ObservableObject {
         case weightDesc = "무게 높은 순"
         case weightAsc = "무게 낮은 순"
         var id: String { rawValue }
-    }
-    
-    /// sortedList를 불러오는 함수입니다.
-    func fetchSortedList() {
-        let list = filteredRetrospects
-        var newList: [Retrospect] = []
-        
-        switch selectedSort {
-        case .dateDesc:
-            newList = list.sorted { $0.date > $1.date }
-        case .dateAsc:
-            newList = list.sorted { $0.date < $1.date }
-        case .satisfactionDesc:
-            newList = list.sorted { $0.satisfaction > $1.satisfaction }
-        case .satisfactionAsc:
-            newList = list.sorted { $0.satisfaction < $1.satisfaction }
-        case .weightDesc:
-            newList = list.sorted { maxWeight($0) > maxWeight($1) }
-        case .weightAsc:
-            newList = list.sorted { maxWeight($0) < maxWeight($1) }
-        }
-        
-        sortedAndFiltered = newList
     }
 }
