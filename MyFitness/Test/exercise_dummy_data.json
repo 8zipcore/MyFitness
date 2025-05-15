@@ -1,0 +1,387 @@
+[
+  {
+    "id": "4836e77f-3186-4e3c-a4e5-cb5342167fd9",
+    "name": "벤치프레스",
+    "exerciseType": 0
+  },
+  {
+    "id": "6b39f6f0-b54e-4b63-a4e5-a386021ffd68",
+    "name": "스쿼트",
+    "exerciseType": 0
+  },
+  {
+    "id": "1184c0ac-cb3d-49db-a7bc-9dc6f67691d2",
+    "name": "데드리프트",
+    "exerciseType": 0
+  },
+  {
+    "id": "0671f77b-6846-428d-8ba8-c19298f75693",
+    "name": "숄더프레스",
+    "exerciseType": 0
+  },
+  {
+    "id": "44b8701f-4933-411b-b536-dc230f329893",
+    "name": "바벨로우",
+    "exerciseType": 0
+  },
+  {
+    "id": "1da03e55-29bc-41e8-bd66-7cf73a5649a9",
+    "name": "풀업",
+    "exerciseType": 0
+  },
+  {
+    "id": "7ddb7517-437c-463f-953a-2b66c6e42469",
+    "name": "친업",
+    "exerciseType": 0
+  },
+  {
+    "id": "7405aaf5-ed1f-4421-9fa2-ac82f467c0ce",
+    "name": "푸쉬업",
+    "exerciseType": 0
+  },
+  {
+    "id": "4940b41b-04d0-4f84-b35c-8c09e0c2da94",
+    "name": "딥스",
+    "exerciseType": 0
+  },
+  {
+    "id": "e4ab9ff1-e228-4515-a7b1-4ca09cdefbab",
+    "name": "랫풀다운",
+    "exerciseType": 0
+  },
+  {
+    "id": "80e0a7f3-c2b3-42f0-9daa-f77ce437ba7a",
+    "name": "레그프레스",
+    "exerciseType": 0
+  },
+  {
+    "id": "59670f37-53ed-4547-9313-0064bb6387da",
+    "name": "레그컬",
+    "exerciseType": 0
+  },
+  {
+    "id": "7ba29f30-d542-4ae0-a3c4-5ead2b261b9b",
+    "name": "레그익스텐션",
+    "exerciseType": 0
+  },
+  {
+    "id": "d11a5612-5712-4fad-900a-922f5e9b0cb7",
+    "name": "벤트오버로우",
+    "exerciseType": 0
+  },
+  {
+    "id": "e3a57221-ee20-4325-baec-7bec94342eb7",
+    "name": "케이블크로스오버",
+    "exerciseType": 0
+  },
+  {
+    "id": "4ba2fe7b-cb3a-4bf3-b0eb-3f64d03a8888",
+    "name": "펙덱플라이",
+    "exerciseType": 0
+  },
+  {
+    "id": "a48ae551-f9cf-4c2b-8058-166e49e6db2f",
+    "name": "덤벨컬",
+    "exerciseType": 0
+  },
+  {
+    "id": "442644b6-40d3-461f-a554-89e36794d90a",
+    "name": "해머컬",
+    "exerciseType": 0
+  },
+  {
+    "id": "bf87e51d-77ce-4fd6-9476-237c7dbd1a93",
+    "name": "트라이셉스익스텐션",
+    "exerciseType": 0
+  },
+  {
+    "id": "9a348d46-7809-4f0c-999d-f9767b5c19e3",
+    "name": "프렌치프레스",
+    "exerciseType": 0
+  },
+  {
+    "id": "431e76fb-bcab-4e5d-b0f1-7192d2045ba6",
+    "name": "숄더레터럴레이즈",
+    "exerciseType": 0
+  },
+  {
+    "id": "695cca78-6637-4a5d-aac5-6c3f0718c216",
+    "name": "프론트레이즈",
+    "exerciseType": 0
+  },
+  {
+    "id": "6c828acc-c825-4b5b-85eb-2f313549e2eb",
+    "name": "리어델트레이즈",
+    "exerciseType": 0
+  },
+  {
+    "id": "f0f031be-40b2-4538-90af-f737cb9e7028",
+    "name": "시티드로우",
+    "exerciseType": 0
+  },
+  {
+    "id": "a523583e-4c79-4cc0-8803-25399e950f90",
+    "name": "스미스머신벤치프레스",
+    "exerciseType": 0
+  },
+  {
+    "id": "5133729c-96bf-414b-8b5e-b35761474627",
+    "name": "스미스머신스쿼트",
+    "exerciseType": 0
+  },
+  {
+    "id": "c7efdb75-41e3-4335-9717-0167cd259576",
+    "name": "컨센트레이션컬",
+    "exerciseType": 0
+  },
+  {
+    "id": "7d43a618-0843-47db-8884-5630299364fa",
+    "name": "케이블푸쉬다운",
+    "exerciseType": 0
+  },
+  {
+    "id": "d5fcf458-c69e-46d2-aee5-cd39e7494864",
+    "name": "케이블로우",
+    "exerciseType": 0
+  },
+  {
+    "id": "120f8a47-919a-4bd2-873d-46be47c8fa10",
+    "name": "덤벨프레스",
+    "exerciseType": 0
+  },
+  {
+    "id": "af401f9b-25f8-4aeb-84f3-d6c6d688f7fe",
+    "name": "머신숄더프레스",
+    "exerciseType": 0
+  },
+  {
+    "id": "8860d232-55e0-4d5c-b8f1-71f850141521",
+    "name": "머신체스트프레스",
+    "exerciseType": 0
+  },
+  {
+    "id": "8e549bef-85df-4a75-b892-30211693a230",
+    "name": "인클라인벤치프레스",
+    "exerciseType": 0
+  },
+  {
+    "id": "a10839f4-db81-41c6-b83b-c5bec9f1dddb",
+    "name": "디클라인벤치프레스",
+    "exerciseType": 0
+  },
+  {
+    "id": "779d1d11-9414-412e-a43c-3ac590258626",
+    "name": "덤벨플라이",
+    "exerciseType": 0
+  },
+  {
+    "id": "7dedd567-1853-4267-b653-ad4801c5344f",
+    "name": "케이블레터럴레이즈",
+    "exerciseType": 0
+  },
+  {
+    "id": "42d15547-9d68-495d-b107-9d2f0afc7589",
+    "name": "바벨컬",
+    "exerciseType": 0
+  },
+  {
+    "id": "355efb22-41b6-4f42-a29d-d73db48d87b2",
+    "name": "리버스컬",
+    "exerciseType": 0
+  },
+  {
+    "id": "8c4d6853-b029-4ee5-a753-a09f40673456",
+    "name": "원암덤벨로우",
+    "exerciseType": 0
+  },
+  {
+    "id": "15be1a0a-0e1c-4618-8b1e-c9ed45ea2c02",
+    "name": "짐볼푸쉬업",
+    "exerciseType": 0
+  },
+  {
+    "id": "cf4031f4-d735-49b7-8736-8e5ff004e59b",
+    "name": "트랩바데드리프트",
+    "exerciseType": 0
+  },
+  {
+    "id": "133a9c5f-3cba-46d6-9f6f-ba7ea2894e95",
+    "name": "핵스쿼트",
+    "exerciseType": 0
+  },
+  {
+    "id": "2c021f29-ff2a-471d-84b0-bfc9d1f5e03e",
+    "name": "글루트킥백",
+    "exerciseType": 0
+  },
+  {
+    "id": "33c46ae5-d9ba-472f-bc3a-420ac6e0c37c",
+    "name": "레그레이즈",
+    "exerciseType": 0
+  },
+  {
+    "id": "fce715a6-7dff-415d-87ee-9fa5a8c7f6c2",
+    "name": "행잉레그레이즈",
+    "exerciseType": 0
+  },
+  {
+    "id": "2b0d7852-8b3c-4ce6-885f-6219ed633d77",
+    "name": "토트바",
+    "exerciseType": 0
+  },
+  {
+    "id": "ef8665f7-7c28-404e-a039-0d03616faa72",
+    "name": "크런치",
+    "exerciseType": 0
+  },
+  {
+    "id": "fab77b0e-1881-4bb6-9b29-c7ec158d37bc",
+    "name": "시티드레그컬",
+    "exerciseType": 0
+  },
+  {
+    "id": "6b33ce37-f322-405c-88af-8c7c3740fe6c",
+    "name": "케이블크런치",
+    "exerciseType": 0
+  },
+  {
+    "id": "9c1883f7-9c44-40ee-aa73-ccf1403dba6a",
+    "name": "러닝",
+    "exerciseType": 1
+  },
+  {
+    "id": "e7f3b51a-5e11-42ad-b040-57ac0d845bef",
+    "name": "사이클링",
+    "exerciseType": 1
+  },
+  {
+    "id": "df755389-42e5-43bf-9d3d-8f36a525ae1e",
+    "name": "수영",
+    "exerciseType": 1
+  },
+  {
+    "id": "d57df242-ff9a-46f5-8981-35dd9ac84903",
+    "name": "줄넘기",
+    "exerciseType": 1
+  },
+  {
+    "id": "68337524-ca4d-4998-838a-bbf1f225e7c5",
+    "name": "걷기",
+    "exerciseType": 1
+  },
+  {
+    "id": "3f219a1c-00e0-4e4a-a2c5-f7a6de70ad2f",
+    "name": "등산",
+    "exerciseType": 1
+  },
+  {
+    "id": "5b5b495e-748b-44b4-81f7-a687d2eb8bba",
+    "name": "하이킹",
+    "exerciseType": 1
+  },
+  {
+    "id": "35f600c5-afdd-4cbd-a3a2-297e59dac26a",
+    "name": "로잉머신",
+    "exerciseType": 1
+  },
+  {
+    "id": "7b510fb7-1921-42c3-9408-9170805767cc",
+    "name": "스텝퍼",
+    "exerciseType": 1
+  },
+  {
+    "id": "9d037fa7-550f-4a29-852b-2216f222cc0e",
+    "name": "에어로빅",
+    "exerciseType": 1
+  },
+  {
+    "id": "7064c922-2a9f-43f8-8e98-dbe4a79eacd0",
+    "name": "댄스",
+    "exerciseType": 1
+  },
+  {
+    "id": "dad89ea8-2b69-46e5-8747-6da345aa74e6",
+    "name": "킥복싱",
+    "exerciseType": 1
+  },
+  {
+    "id": "56476dcd-6482-4777-a0fe-f93494fc071a",
+    "name": "스피닝",
+    "exerciseType": 1
+  },
+  {
+    "id": "f32a6049-d9d1-48b5-889d-78b0ac23022c",
+    "name": "인라인스케이팅",
+    "exerciseType": 1
+  },
+  {
+    "id": "a2f3ca0b-a241-47f8-8c48-3e450e1e7467",
+    "name": "크로스핏",
+    "exerciseType": 1
+  },
+  {
+    "id": "6d9a3e4b-5d92-4e26-bac7-e8692efbc92d",
+    "name": "트레킹",
+    "exerciseType": 1
+  },
+  {
+    "id": "cb1a3b3d-dc8a-45a8-9439-1a87b6b875fa",
+    "name": "런지워킹",
+    "exerciseType": 1
+  },
+  {
+    "id": "f706e52b-30f8-4699-b6d6-20f8218c5fff",
+    "name": "트레드밀",
+    "exerciseType": 1
+  },
+  {
+    "id": "ed948429-cb9b-4810-b5b3-d3bedea108a9",
+    "name": "야외조깅",
+    "exerciseType": 1
+  },
+  {
+    "id": "c3d7e363-b49e-40c0-8c2f-0d7a19e04c8b",
+    "name": "인터벌러닝",
+    "exerciseType": 1
+  },
+  {
+    "id": "8274ea21-0810-45d0-94eb-236683c39607",
+    "name": "로잉",
+    "exerciseType": 1
+  },
+  {
+    "id": "34d664d4-c6a0-4e29-98ba-8076da7f1153",
+    "name": "점핑잭",
+    "exerciseType": 1
+  },
+  {
+    "id": "5269ad6e-f564-47f0-bb75-40841e27d178",
+    "name": "마운틴클라이머",
+    "exerciseType": 1
+  },
+  {
+    "id": "1c0d2de6-9de7-40c5-9ffa-15eb9b378212",
+    "name": "버피",
+    "exerciseType": 1
+  },
+  {
+    "id": "c944e3fa-475b-449e-8dfe-09714bbf9757",
+    "name": "요가",
+    "exerciseType": 1
+  },
+  {
+    "id": "eca99940-10bc-463b-af88-2a66d07f972a",
+    "name": "필라테스",
+    "exerciseType": 1
+  },
+  {
+    "id": "992c3757-ef0d-48de-baa8-5716056b2ecb",
+    "name": "자전거타기",
+    "exerciseType": 1
+  },
+  {
+    "id": "30fa2602-50fd-4abc-81a9-2e9c316a90a7",
+    "name": "계단오르기",
+    "exerciseType": 1
+  },
+]

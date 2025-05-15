@@ -33,3 +33,9 @@ struct CardioDTO: Codable {
     var name: String
     var minutes: Int
 }
+
+struct ExerciseDTO: Codable {
+    var id: UUID
+    var name: String
+    var exerciseType: Int
+}

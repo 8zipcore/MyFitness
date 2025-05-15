@@ -52,6 +52,10 @@ struct MyFitnessApp: App {
             for retrospect in dummyData {
                 context.insert(retrospect)
             }
+            let exercises = createExercises(loadExerciseDummyDataFromJSON())
+            for exercise in exercises {
+                context.insert(exercise)
+            }
 
             try context.save()
             print("✅ 더미 데이터 삽입 완료")
@@ -71,6 +75,24 @@ struct MyFitnessApp: App {
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
             let decoded = try decoder.decode([RetrospectDTO].self, from: data)
+            return decoded
+        } catch {
+            print("❌ 디코딩 실패: \(error)")
+            return []
+        }
+    }
+    
+    func loadExerciseDummyDataFromJSON() -> [ExerciseDTO] {
+        guard let url = Bundle.main.url(forResource: "exercise_dummy_data", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else {
+            print("❌ JSON 파일을 찾을 수 없음")
+            return []
+        }
+
+        do {
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            let decoded = try decoder.decode([ExerciseDTO].self, from: data)
             return decoded
         } catch {
             print("❌ 디코딩 실패: \(error)")
@@ -110,5 +132,9 @@ struct MyFitnessApp: App {
     
     func createCategories(_ datas: [String]) -> [Category] {
         datas.map { Category(rawValue: $0) ?? .arms }
+    }
+    
+    func createExercises(_ datas: [ExerciseDTO]) -> [Exercise] {
+        datas.map { Exercise(name: $0.name, exerciseType: ExerciseType(rawValue: $0.exerciseType) ?? .anaerobic) }
     }
 }
