@@ -122,6 +122,14 @@ struct RetrospectView: View {
                     .autocorrectionDisabled(false)
                     .textInputAutocapitalization(.never)
                     .focused($isFocused)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Spacer()
+                            Button("완료") {
+                                isFocused = false
+                            }
+                        }
+                    }
                     .onSubmit {
                         isFocused = false
                     }

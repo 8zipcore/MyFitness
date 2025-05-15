@@ -10,6 +10,8 @@ import SwiftData
 
 /// 메인 화면
 struct MainView: View {
+
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.colorScheme) private var colorScheme
 
     @StateObject private var retrospectVM = RetrospectViewModel()
@@ -25,9 +27,14 @@ struct MainView: View {
     }
 
     var body: some View {
-        let circleWidth: CGFloat = 30
-        let iconWidth: CGFloat = 17
+        /* size */
+        let isiPad = horizontalSizeClass == .regular
+        
+        let circleWidth: CGFloat = isiPad ? 35 : 30
+        let iconWidth: CGFloat = isiPad ? 20 : 17
+        let circleButtonWidth: CGFloat = isiPad ? 80 : 65
 
+        /* color */
         let isLight = colorScheme == .light
 
         let primaryColor: Color = isLight ? .black : .white
@@ -90,10 +97,10 @@ struct MainView: View {
                         CircleButton(type: .plus) {
                             isPresented = true
                         }
-                        .frame(width: 65, height: 65)
+                        .frame(width: circleButtonWidth, height: circleButtonWidth)
                     }
-                    .padding(.vertical, 20)
-                    .padding(.horizontal, 30)
+                    .padding(.vertical, circleButtonWidth * 0.3)
+                    .padding(.horizontal, circleButtonWidth * 0.46)
                 }
             }
         }

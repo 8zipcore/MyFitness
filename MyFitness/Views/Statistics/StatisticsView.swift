@@ -13,33 +13,37 @@ struct StatisticsView: View {
     let backgroundColor: Color
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 10) {
             TitleView(viewModel: viewModel)
             
             Form {
-                Picker("기간", selection: $viewModel.weekOrMonth) {
-                    ForEach(WeekOrMonth.allCases) { option in
-                        Text(option.rawValue).tag(option)
+                Section {
+                    Picker("기간", selection: $viewModel.weekOrMonth) {
+                        ForEach(WeekOrMonth.allCases) { option in
+                            Text(option.rawValue).tag(option)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.vertical)
+                    
+                    VStack(spacing: 10) {
+                        ExerciseDayView(viewModel: viewModel)
+                        
+                        Divider()
+                        
+                        WorkoutTimeChartView(
+                            viewModel: viewModel,
+                            retrospects: retrospects,
+                            weekOrMonth: viewModel.weekOrMonth
+                        )
                     }
                 }
-                .pickerStyle(.segmented)
-                .padding(.vertical)
-                
-                Section {
-                    ExerciseDayView(viewModel: viewModel)
-                }
-                
-                Section {
-                    WorkoutTimeChartView(
-                        viewModel: viewModel,
-                        retrospects: retrospects,
-                        weekOrMonth: viewModel.weekOrMonth
-                    )
-                }
+                .listRowSeparator(.hidden)
                 
                 Section {
                     PeriodStatisticsView(viewModel: viewModel)
                 }
+                .listRowSeparator(.hidden)
                 
                 Section {
                     HStack {
@@ -48,10 +52,12 @@ struct StatisticsView: View {
                         Spacer()
                     }
                 }
+                .listRowSeparator(.hidden)
                 
                 Section {
                     CategoryPerCountView(viewModel: viewModel)
                 }
+                .listRowSeparator(.hidden)
                 
                 Section {
                     VStack(alignment: .leading) {
@@ -92,6 +98,7 @@ struct StatisticsView: View {
                         }
                     }
                 }
+                .listRowSeparator(.hidden)
                 
                 Section {
                     VStack(alignment: .leading) {
@@ -129,6 +136,7 @@ struct StatisticsView: View {
                         }
                     }
                 }
+                .listRowSeparator(.hidden)
             }
             .onChange(of: viewModel.selectedDate) {
                 viewModel.setData(retrospects: retrospects)

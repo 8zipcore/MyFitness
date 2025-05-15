@@ -12,13 +12,18 @@ struct CategoryPerCountView: View {
     @ObservedObject var viewModel: StatisticsViewModel
 
     var body: some View {
-        Text("카테고리별 운동 횟수")
-            .font(.title3)
-            .foregroundStyle(.gray)
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack {
-                ForEach(viewModel.getSortedCategoryList(), id: \.0) { item in
-                    CircularView(category: item.0, count: item.1, totalCount: Double(viewModel.totalCategoryCount))
+        VStack(spacing: 10) {
+            Text("카테고리별 운동 횟수")
+                .font(.title3)
+                .foregroundStyle(.gray)
+            
+            Divider()
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(viewModel.getSortedCategoryList(), id: \.0) { item in
+                        CircularView(category: item.0, count: item.1, totalCount: Double(viewModel.totalCategoryCount))
+                    }
                 }
             }
         }
