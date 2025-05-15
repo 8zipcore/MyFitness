@@ -53,8 +53,6 @@ struct SearchView: View {
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(backgroundColor)
 
-                    // 아이템 누르면 저장 뜨고 카테고리 누르고 누르면 삭제수정 뜨는 issue
-
                     ForEach(searchVM.sortedAndFiltered.indices, id:\.self) { index in
                         let item = searchVM.sortedAndFiltered[index]
 

@@ -44,7 +44,8 @@ extension Date {
         return calendar.date(from: components) ?? self
     }
 
-    // TODO:
+    /// 해당 날짜가 속한 달의 주 수를 반환하는 함수입니다.
+    /// - Returns: 달(month) 내 포함된 주(week) 수 (Int)
     func weeksInMonth() -> Int {
         let calendar = Calendar.current
         guard let interval = calendar.dateInterval(of: .month, for: self),
@@ -53,14 +54,16 @@ extension Date {
         }
         return calendar.component(.weekOfMonth, from: lastDay)
     }
-}
+    
+    /// 현재 날짜(self)와 전달된 날짜가 같은 연도와 월에 속하는지 비교하는 함수입니다.
+    /// - Parameter date: 비교할 날짜
+    /// - Returns: 두 날짜가 같은 연도와 월이면 true, 아니면 false
+    func isSameYearAndMonth(_ date: Date) -> Bool {
+        let calendar = Calendar.current
+        let lhsComponents = calendar.dateComponents([.year, .month], from: self)
+        let rhsComponents = calendar.dateComponents([.year, .month], from: date)
 
-// TODO: 
-func isSameYearAndMonth(_ lhs: Date, _ rhs: Date) -> Bool {
-    let calendar = Calendar.current
-    let lhsComponents = calendar.dateComponents([.year, .month], from: lhs)
-    let rhsComponents = calendar.dateComponents([.year, .month], from: rhs)
-
-    return lhsComponents.year == rhsComponents.year &&
-           lhsComponents.month == rhsComponents.month
+        return lhsComponents.year == rhsComponents.year &&
+               lhsComponents.month == rhsComponents.month
+    }
 }

@@ -332,7 +332,7 @@ extension StatisticsViewModel {
         var weekWorkoutTimes: [Int: [Int]] = [:]
 
         retrospects.forEach {
-            if isSameYearAndMonth($0.date, selectedDate) {
+            if $0.date.isSameYearAndMonth(selectedDate) {
                 let week = Calendar.current.component(.weekOfMonth, from: $0.date)
                 weekWorkoutTimes[week, default: []].append(Int($0.finishTime.timeIntervalSince($0.startTime)) / 60)
             }
