@@ -45,5 +45,5 @@ struct WorkoutTimeChartView: View {
 }
 
 #Preview {
-    WorkoutTimeChartView(statisticsVM: StatisticsViewModel(), retrospects: DummyData().exampleList, weekOrMonth: .month)
+    WorkoutTimeChartView(statisticsVM: StatisticsViewModel(), retrospects: exampleList, weekOrMonth: .month)
 }

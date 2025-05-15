@@ -28,5 +28,5 @@ struct CategoryChartView: View {
 }
 
 #Preview {
-    CategoryChartView(statisticsVM: StatisticsViewModel(), retrospects: DummyData().exampleList)
+    CategoryChartView(statisticsVM: StatisticsViewModel(), retrospects: exampleList)
 }

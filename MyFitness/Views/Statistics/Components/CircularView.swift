@@ -2,7 +2,7 @@
 //  CircularView.swift
 //  MyFitness
 //
-//  Created by 홍승아 on 5/14/25.
+//  Created by 강대훈 on 5/15/25.
 //
 
 import SwiftUI
@@ -10,7 +10,7 @@ import SwiftUI
 struct CircularView: View {
     var category: Category
     var count: Int
-    
+
     var body: some View {
         VStack {
             Text(category.rawValue)

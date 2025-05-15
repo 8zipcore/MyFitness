@@ -1,8 +1,8 @@
 //
-//  CircularProgressBarView.swift
+//  CircularProgressView.swift
 //  MyFitness
 //
-//  Created by 홍승아 on 5/14/25.
+//  Created by 강대훈 on 5/15/25.
 //
 
 import SwiftUI
@@ -11,7 +11,7 @@ struct CircularProgressBarView: View {
     var category: Category
     var progress: Double = 0.0
     var count: Int = 0
-    
+
     var body: some View {
         ZStack {
             Circle()
@@ -24,7 +24,7 @@ struct CircularProgressBarView: View {
                 .stroke(style: StrokeStyle(lineWidth: 12, lineCap: .round))
                 .foregroundColor(category.color)
                 .rotationEffect(.degrees(-90))
-            
+
             Text("\(count)건")
                 .font(.title2)
                 .bold()

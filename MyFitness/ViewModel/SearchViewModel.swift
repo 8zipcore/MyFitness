@@ -22,9 +22,7 @@ final class SearchViewModel: ObservableObject {
         self.selectedSort = .dateDesc
         self.retrospects = []
     }
-
     
-
     /// 필터링 해서 표시해줄 배열입니다
     private var filteredRetrospects: [Retrospect] {
         let filtered = retrospects.filter { restro in
