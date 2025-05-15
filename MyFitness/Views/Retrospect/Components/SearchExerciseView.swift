@@ -51,7 +51,7 @@ struct SearchExerciseView: View {
             .onDelete { indexSet in
                 // MARK: Exercise 데이터 Delete
                 for index in indexSet {
-                    context.delete(exercises[index])
+                    context.delete(filteredExercise[index])
                 }
             }
         }
