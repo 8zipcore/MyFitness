@@ -27,6 +27,7 @@ struct TitleView: View {
             }
 
             Text(viewModel.dateToString(type: viewModel.weekOrMonth))
+                .font(.headline)
                 .minimumScaleFactor(0.5)
                 .frame(maxWidth: .infinity)
 

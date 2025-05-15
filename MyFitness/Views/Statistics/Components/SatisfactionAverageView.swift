@@ -11,7 +11,7 @@ struct SatisfactionAverageView: View {
     @ObservedObject var viewModel: StatisticsViewModel
 
     var body: some View {
-        VStack {
+        VStack(spacing: 10) {
             Text("이번 \(viewModel.weekOrMonth == .week ? "주" : "달") 운동 만족도")
                 .font(.title3)
                 .foregroundStyle(.gray)
