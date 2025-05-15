@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// TODO: 
 func RGB(r: Int, g: Int, b: Int, opacity: CGFloat = 1) -> Color {
     return Color(red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255, opacity: opacity)
 }
