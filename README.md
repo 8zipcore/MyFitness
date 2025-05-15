@@ -2,10 +2,20 @@
 ![Static Badge](https://img.shields.io/badge/Xcode_-16.0%2B-blue)
 
 ## 실행방법
-> 저장소 클론하고 .xcodeproj 실행하면 됩니다!
+저장소 클론하기
+
+터미널을 열고 다음 명령어를 입력하여 저장소를 클론합니다:
 ```
 git clone https://github.com/8zipcore/MyFitness.git myFitness
 ```
+클론한 디렉토리로 이동하여 `MyFitness.xcodeproj` 파일을 더블 클릭하거나, 터미널에서 다음 명령어를 입력하여 Xcode에서 프로젝트를 엽니다:
+```
+cd myFitness
+open MyFitness.xcodeproj
+```
+Xcode에서 상단의 실행 버튼(▶️)을 클릭하여 시뮬레이터 또는 연결된 iOS 기기에서 앱을 실행합니다.
+
+<br/>
 
 ## 1. Project Overview (프로젝트 개요)
 - 프로젝트 이름: MyFitness
