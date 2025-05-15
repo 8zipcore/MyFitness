@@ -68,7 +68,6 @@ final class RetrospectWriteViewModel: ObservableObject {
     /// - Parameter context: DB를 조작할 수 있는 객체입니다.
     func save(context: ModelContext) {
         try? context.save()
-        print(retrospect.anaerobics.count, retrospect.cardios.count)
     }
 
     /// 데이터를 삭제합니다.
