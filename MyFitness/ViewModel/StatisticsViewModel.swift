@@ -1,7 +1,6 @@
 import SwiftUI
 
 final class StatisticsViewModel: ObservableObject {
- 
     @Published var periodTimes: [PeriodTime] = []
     @Published var anaerobicCounts: [ExerciseCount] = []
     @Published var cardioCounts: [ExerciseCount] = []
@@ -9,6 +8,8 @@ final class StatisticsViewModel: ObservableObject {
     @Published var cardioTotalCount: Int = 0
     @Published var anaerobicMaxCount: Int = 0
     @Published var cardioMaxCount: Int = 0
+    @Published var exerciseDayCount: Int = 0
+    @Published var totalSatisfaction: Double = 0.0
 
     @Published var weekOrMonth: WeekOrMonth = .week
     @Published var showAnaerobicAll: Bool = false
@@ -29,6 +30,8 @@ final class StatisticsViewModel: ObservableObject {
         setAnaerobicCount(retrospects: retrospects)
         setCardioTotalCount(retrospects: retrospects)
         setAnaerobicTotalCount(retrospects: retrospects)
+        setTotalSatisfaction(retrospects: retrospects)
+        setExerciseDayCount(retrospects: retrospects)
 
         anaerobicMaxCount = anaerobicCounts.max { $0.count < $1.count }?.count ?? 0
         cardioMaxCount = cardioCounts.max { $0.count < $1.count }?.count ?? 0
@@ -39,6 +42,10 @@ final class StatisticsViewModel: ObservableObject {
 
     func getCategoryCount(retrospects: [Retrospect], category: Category) -> Int {
         return retrospects.flatMap { $0.category.filter { $0 == category } }.count
+    }
+
+    func getTotalCategoryCount(retrospects: [Retrospect]) -> Double {
+        return Double(retrospects.map { $0.category.count }.count)
     }
 
     private func setPeriodTime(retrospects: [Retrospect]) {
@@ -98,7 +105,15 @@ final class StatisticsViewModel: ObservableObject {
             cardioCountList.append(ExerciseCount(name: $0.key, count: $0.value))
         }
 
-        self.cardioCounts = anaerobicCounts
+        self.cardioCounts = cardioCountList
+    }
+
+    private func setTotalSatisfaction(retrospects: [Retrospect]) {
+        self.totalSatisfaction = Double(retrospects.map { Int($0.satisfaction) }.reduce(0, +)) / Double(retrospects.count)
+    }
+
+    private func setExerciseDayCount(retrospects: [Retrospect]) {
+        self.exerciseDayCount = retrospects.count
     }
 }
 

@@ -52,7 +52,7 @@ struct StatisticsView: View {
 
             Section {
                 WorkoutTimeChartView(
-                    statisticsVM: viewModel,
+                    viewModel: viewModel,
                     retrospects: exampleList,
                     weekOrMonth: viewModel.weekOrMonth
                 )
@@ -60,6 +60,14 @@ struct StatisticsView: View {
 
             Section {
                 PeriodStatisticsView(viewModel: viewModel)
+            }
+
+            Section {
+                HStack {
+                    Spacer()
+                    SatisfactionAverageView(viewModel: viewModel)
+                    Spacer()
+                }
             }
 
             Section {
@@ -84,7 +92,7 @@ struct StatisticsView: View {
                                 .font(.callout)
                             HStack {
                                 ProgressView(value: Double(exercise.count), total: Double(viewModel.anaerobicMaxCount))
-                                    .accentColor(.blue)
+                                    .accentColor(.green)
                                     .background(.clear)
                                 Text("\(exercise.count)번")
                                     .font(.footnote)
@@ -124,7 +132,7 @@ struct StatisticsView: View {
                                 .font(.callout)
                             HStack {
                                 ProgressView(value: Double(exercise.count), total: Double(viewModel.cardioMaxCount))
-                                    .accentColor(.blue)
+                                    .accentColor(.green)
                                     .background(.clear)
                                 Text("\(exercise.count)번")
                                     .font(.footnote)

@@ -43,4 +43,7 @@ struct TitleView: View {
     }
 }
 
+#Preview {
+    TitleView(viewModel: StatisticsViewModel())
+}
 

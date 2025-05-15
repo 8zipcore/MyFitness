@@ -12,7 +12,7 @@ struct WorkoutTimeChartView: View {
     
     @Environment(\.colorScheme) private var colorScheme
     
-    @ObservedObject var statisticsVM: StatisticsViewModel
+    @ObservedObject var viewModel: StatisticsViewModel
     let retrospects: [Retrospect]
     let weekOrMonth: WeekOrMonth
     
@@ -24,7 +24,7 @@ struct WorkoutTimeChartView: View {
             .foregroundStyle(.gray)
             .frame(maxWidth: .infinity, alignment: .leading)
         
-        Chart(statisticsVM.workoutTimes(from: retrospects, type: weekOrMonth)) { item in
+        Chart(viewModel.workoutTimes(from: retrospects, type: weekOrMonth)) { item in
             BarMark(
                 x: .value("주", item.week),
                 y: .value("시간", item.time)
@@ -45,5 +45,5 @@ struct WorkoutTimeChartView: View {
 }
 
 #Preview {
-    WorkoutTimeChartView(statisticsVM: StatisticsViewModel(), retrospects: exampleList, weekOrMonth: .month)
+    WorkoutTimeChartView(viewModel: StatisticsViewModel(), retrospects: exampleList, weekOrMonth: .month)
 }
