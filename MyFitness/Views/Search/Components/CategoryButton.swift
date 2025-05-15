@@ -13,9 +13,9 @@ struct CategoryButton: View {
         
         let backgroundColor: Color = {
             if isSelected {
-                return isDark ? .white : .black
+                return isDark ? .white.opacity(0.9) : .black
             } else {
-                return isDark ? .black : .white
+                return isDark ? .black.opacity(0.5) : .white
             }
         }()
         
@@ -31,7 +31,7 @@ struct CategoryButton: View {
             if isSelected {
                 return .clear
             } else {
-                return isDark ? .white : .black
+                return isDark ? .gray.opacity(0.7) : .black.opacity(0.7)
             }
         }()
         
@@ -40,16 +40,16 @@ struct CategoryButton: View {
         } label: {
             Text("\(category.emoji)\(category.rawValue)")
                 .foregroundStyle(textColor)
-                .padding(.horizontal, 2)
+                .padding(.vertical, 6)
+                .padding(.horizontal, 15)
             
         }
-        .buttonStyle(.borderedProminent)
-        .buttonBorderShape(.roundedRectangle)
-        .tint(backgroundColor)
-        .overlay {
-            RoundedRectangle(cornerRadius: 12)
+//        .buttonStyle(.borderedProminent)
+        .background {
+            RoundedRectangle(cornerRadius: 15)
+                .fill(backgroundColor)
                 .stroke(borderColor, lineWidth: 1)
         }
-        
+        .padding(.vertical, 3)
     }
 }
