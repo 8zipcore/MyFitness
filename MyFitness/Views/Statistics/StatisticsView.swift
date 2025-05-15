@@ -152,13 +152,13 @@ struct StatisticsView: View {
             }
         }
         .onChange(of: viewModel.selectedDate) {
-            viewModel.setData(retrospects: exampleList)
+            viewModel.setData(retrospects: retrospects)
         }
         .onChange(of: viewModel.weekOrMonth) {
-            viewModel.setData(retrospects: exampleList)
+            viewModel.setData(retrospects: retrospects)
         }
         .onAppear {
-            viewModel.setData(retrospects: exampleList)
+            viewModel.setData(retrospects: retrospects)
         }
         .navigationTitle("통계")
         .navigationBarTitleDisplayMode(.inline)

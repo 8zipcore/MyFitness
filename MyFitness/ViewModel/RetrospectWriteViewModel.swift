@@ -6,6 +6,7 @@ final class RetrospectWriteViewModel: ObservableObject {
     @Published var retrospect: Retrospect
     @Published var isInvalidDate: Bool = false
     @Published var isInvalidExercise: Bool = false
+    @Published var isDelete: Bool = false
     @Published var categoryList: [Category] = Category.allCases
 
     /// 최초 생성시에 사용되는 생성자입니다.

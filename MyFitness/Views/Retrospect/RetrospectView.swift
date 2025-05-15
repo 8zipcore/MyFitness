@@ -1,14 +1,5 @@
-//
-//  Retrospect.swift
-//  MyFitness
-//
-//  Created by 강대훈 on 5/12/25.
-//
-
 import SwiftUI
 import SwiftData
-
-// TODO: 수정이 잘 안될 가능성이 있음 안된다면 리팩토링 예정
 
 /// 회고 생성, 수정, 삭제 메인 화면
 struct RetrospectView: View {
@@ -20,7 +11,6 @@ struct RetrospectView: View {
     @FocusState private var isFocused: Bool
 
     var isCreate: Bool = false
-
     /// RetrospectView 생성자
     /// - Parameters:
     ///   - isCreated: 최초 생성인지 수정인지 Bool값으로 받습니다.
@@ -62,7 +52,7 @@ struct RetrospectView: View {
             Section("무산소 운동") {
                 List {
                     ForEach($viewModel.retrospect.anaerobics) { $anaerobic in
-                        AnaerobicView(anaerobic: $anaerobic)
+                        AnaerobicCreateView(anaerobic: $anaerobic)
                     }
                     .onDelete { indexPath in
                         viewModel.retrospect.anaerobics.remove(atOffsets: indexPath)
@@ -79,7 +69,7 @@ struct RetrospectView: View {
             Section("유산소 운동") {
                 List {
                     ForEach($viewModel.retrospect.cardios) { $cardio in
-                        CardioView(cardio: $cardio)
+                        CardioCreateView(cardio: $cardio)
                     }
                     .onDelete { indexPath in
                         viewModel.retrospect.cardios.remove(atOffsets: indexPath)
@@ -158,6 +148,22 @@ struct RetrospectView: View {
         } message: {
             Text("선택하지 않은 운동이 존재합니다.")
         }
+        .alert("", isPresented: $viewModel.isDelete) {
+            Button(role: .destructive) {
+                viewModel.delete(context: context)
+                dismiss()
+            } label: {
+                Text("삭제")
+            }
+
+            Button(role: .cancel) {
+
+            } label: {
+                Text("취소")
+            }
+        } message: {
+            Text("정말로 삭제하시겠습니까?")
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -189,8 +195,7 @@ struct RetrospectView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         // MARK: Retrospect 데이터 삭제
-                        viewModel.delete(context: context)
-                        dismiss()
+                        viewModel.isDelete = true
                     } label: {
                         Text("삭제")
                             .foregroundStyle(.red)
@@ -200,168 +205,6 @@ struct RetrospectView: View {
         }
         .navigationTitle("운동 기록")
         .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-/// 무산소 운동을 추가할 때 나타나는 화면
-struct AnaerobicView: View {
-    @Binding var anaerobic: Anaerobic
-    @State private var showSearchView: Bool = false
-
-    var body: some View {
-        VStack {
-            HStack {
-                Text(anaerobic.name == "" ? "운동명" : anaerobic.name)
-                    .foregroundStyle(.gray)
-                Spacer()
-            }
-            .contentShape(Rectangle()) // 제스쳐 범위 늘리기
-            .onTapGesture {
-                showSearchView = true
-            }
-
-            Divider()
-
-            HStack {
-                Picker("", selection: $anaerobic.weight) {
-                    ForEach(Array(stride(from: 0, through: 200, by: 5)), id: \.self) { number in
-                        Text("\(number)")
-                    }
-                }
-
-                Text("Kg")
-
-                Picker("", selection: $anaerobic.set) {
-                    ForEach(0..<200, id: \.self) { number in
-                        Text("\(number)")
-                    }
-
-                }
-
-                Text("세트")
-
-                Picker("", selection: $anaerobic.count) {
-                    ForEach(0..<200, id: \.self) { number in
-                        Text("\(number)")
-                    }
-                }
-                Text("회")
-
-                Spacer()
-            }
-        }
-        .sheet(isPresented: $showSearchView) {
-            NavigationStack {
-                SearchExerciseView(name: $anaerobic.name, exerciseType: .anaerobic)
-            }
-        }
-    }
-}
-
-/// 유산소 운동을 추가할 때 나타나는 화면
-struct CardioView: View {
-    @Binding var cardio: Cardio
-    @State private var showSearchView: Bool = false
-
-    var body: some View {
-        HStack {
-            Text(cardio.name == "" ? "운동명" : cardio.name)
-                .foregroundStyle(.gray)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    showSearchView = true
-                }
-            Spacer()
-            Picker("", selection: $cardio.minutes) {
-                ForEach(0..<201, id: \.self) { number in
-                    Text("\(number)")
-                }
-            }
-            .labelsHidden()
-            .clipped()
-            Text("분")
-        }
-        .sheet(isPresented: $showSearchView) {
-            NavigationStack {
-                SearchExerciseView(name: $cardio.name, exerciseType: .cardio)
-            }
-        }
-    }
-}
-
-/// 유저가 세부 운동을 검색할 수 있는 화면
-struct SearchExerciseView: View {
-    @Environment(\.modelContext) var context
-    @Environment(\.dismiss) var dismiss
-
-    @Query(sort: [SortDescriptor(\Exercise.name, order: .forward)])
-    var exercises: [Exercise]
-
-    @State var keyword: String = ""
-    @Binding var name: String
-
-    let exerciseType: ExerciseType
-
-    var filteredExercise: [Exercise] {
-        if keyword.isEmpty {
-            return exercises.filter { $0.exerciseType == exerciseType }
-        }
-
-        return exercises.filter {
-            $0.exerciseType == exerciseType && $0.name.lowercased().contains(keyword.lowercased())
-        }
-    }
-
-    var body: some View {
-        List {
-            Section {
-                addCustomExerciseView(exerciseType: exerciseType)
-            }
-
-            ForEach(filteredExercise) { exercise in
-                HStack {
-                    Text(exercise.name)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
-                }
-                .onTapGesture {
-                    name = exercise.name
-                    dismiss()
-                }
-            }
-            .onDelete { indexSet in
-                // MARK: Exercise 데이터 Delete
-                for index in indexSet {
-                    context.delete(exercises[index])
-                }
-            }
-        }
-        .navigationTitle("운동 검색")
-        .searchable(text: $keyword, prompt: "\(exerciseType == .cardio ? "유산소" : "무산소") 운동을 검색하세요")
-    }
-}
-
-/// 유저가 직접 운동을 추가할 수 있는 화면
-struct addCustomExerciseView: View {
-    @Environment(\.modelContext) var context
-    @State private var exerciseLabel: String = ""
-    let exerciseType: ExerciseType
-
-    var body: some View {
-        HStack {
-            TextField("원하시는 운동을 추가 하세요", text: $exerciseLabel)
-            Spacer()
-            Button {
-                // MARK: Exercise 데이터 Insert
-                guard !exerciseLabel.isEmpty else { return }
-                let exercise = Exercise(name: exerciseLabel, exerciseType: exerciseType)
-                context.insert(exercise)
-                exerciseLabel = ""
-            } label: {
-                Image(systemName: "plus")
-            }
-        }
     }
 }
 
@@ -375,28 +218,6 @@ struct addCustomExerciseView: View {
 #Preview("생성 화면") {
     NavigationStack {
         RetrospectView()
-    }
-}
-
-#Preview("SearchExerciseView") {
-    let container: ModelContainer = {
-        let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(for: Exercise.self, configurations: config)
-
-        let exercise1 = Exercise(name: "벤치 프레스", exerciseType: .anaerobic)
-        let exercise2 = Exercise(name: "데드 리프트", exerciseType: .anaerobic)
-        let exercise3 = Exercise(name: "스쿼트", exerciseType: .anaerobic)
-
-        container.mainContext.insert(exercise1)
-        container.mainContext.insert(exercise2)
-        container.mainContext.insert(exercise3)
-
-        return container
-    }()
-
-    NavigationStack {
-        SearchExerciseView(name: .constant("테스트"), exerciseType: .cardio)
-            .modelContainer(container)
     }
 }
 
