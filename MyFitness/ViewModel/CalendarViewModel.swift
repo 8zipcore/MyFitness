@@ -7,25 +7,28 @@
 
 import Foundation
 
-/// MainView에 표시되는 캘린더 데이터를 관리하는 ViewModel입니다.
-class CalendarViewModel: ObservableObject {
-    /// 달력에서 월의 위치를 나타내는 열거형입니다.
-    ///
-    /// 이 열거형은 현재 달력을 기준으로 이전 달, 현재 달, 다음 달을 구분할 때 사용됩니다.
-    enum MonthType {
-        case previos, current, next
-        
-        var value: Int {
-            switch self {
-            case .previos:
-                return -1
-            case .current:
-                return 0
-            case .next:
-                return 1
-            }
+/// 달력에서 월의 위치를 나타내는 열거형입니다.
+///
+/// 이 열거형은 현재 달력을 기준으로 이전 달, 현재 달, 다음 달을 구분할 때 사용됩니다.
+enum CalendarDirection: Int {
+    case previous
+    case current
+    case next
+    
+    var value: Int {
+        switch self {
+        case .previous:
+            return -1
+        case .current:
+            return 0
+        case .next:
+            return 1
         }
     }
+}
+
+/// MainView에 표시되는 캘린더 데이터를 관리하는 ViewModel입니다.
+class CalendarViewModel: ObservableObject {
     /// 현재 선택된 날짜입니다.
     ///
     /// 캘린더에서 사용자가 선택한 날짜를 나타내며,
@@ -52,7 +55,7 @@ class CalendarViewModel: ObservableObject {
     init() {
         self.selectedDate = .now
         self.currentMonthDate = .now
-        self.months = [days(from: .previos), days(from: .current), days(from: .next)]
+        self.months = [days(from: .previous), days(from: .current), days(from: .next)]
     }
     /// 해당 달의 첫번째 요일을 구하는 함수입니다.
     func firstWeekdayOfMonth(in date: Date) -> Int?{
@@ -93,7 +96,7 @@ class CalendarViewModel: ObservableObject {
             currentMonthDate = newDate
         }
         
-        months = [days(from: .previos), days(from: .current), days(from: .next)]
+        months = [days(from: .previous), days(from: .current), days(from: .next)]
     }
     /// currentMonthDate의 달을 지정한 값으로 변경하고, 이에 따라 month 데이터도 함께 갱신합니다.
     func changeMonth(_ month: Int) {
@@ -104,17 +107,17 @@ class CalendarViewModel: ObservableObject {
             currentMonthDate = newDate
         }
         
-        months = [days(from: .previos), days(from: .current), days(from: .next)]
+        months = [days(from: .previous), days(from: .current), days(from: .next)]
     }
-    /// currentMonthDate의 달을 MonthType에 따라 변경하고, 이에 따라 month 데이터도 함께 갱신합니다.
-    func changeMonth(by type: MonthType) {
+    /// currentMonthDate의 달을 CalendarDirection에 따라 변경하고, 이에 따라 month 데이터도 함께 갱신합니다.
+    func changeMonth(by type: CalendarDirection) {
         if let newMonth = Calendar.current.date(byAdding: .month, value: type.value, to: currentMonthDate) {
             self.currentMonthDate = newMonth
         }
         
         switch type {
-        case .previos:
-            months.insert(days(from: .previos), at: 0)
+        case .previous:
+            months.insert(days(from: .previous), at: 0)
             months.removeLast()
         case .current: break
         case .next:
@@ -123,32 +126,21 @@ class CalendarViewModel: ObservableObject {
         }
     }
     /// selectedDate의 날짜를 지정한 값으로 변경하는 함수입니다.
-    func changeDay(_ day: Int) {
-        let currentYear = Calendar.current.component(.year, from: currentMonthDate)
-        let currentMonth = Calendar.current.component(.month, from: currentMonthDate)
-
-        if let newDate = Calendar.current.date(from: DateComponents(year: currentYear, month: currentMonth, day: day)) {
-            selectedDate = newDate
-        }
+    func changeDay(_ date: Date) {
+        selectedDate = date
     }
     /// 해당 날짜에 작성된 회고가 있는지 여부를 반환합니다.
-    func didWriteRetrospect(on day: Int, writtenDates: [Date]) -> Bool {
-        let calendar = Calendar.current
-        var components = calendar.dateComponents([.year, .month], from: currentMonthDate)
-        components.day = day
-
-        guard let newDate = calendar.date(from: components) else { return false }
-
+    func didWriteRetrospect(on date: Date, writtenDates: [Date]) -> Bool {
         return writtenDates.contains { writtenDate in
-            return Calendar.current.isDate(writtenDate, inSameDayAs: newDate)
+            return Calendar.current.isDate(writtenDate, inSameDayAs: date)
         }
     }
-    /// [`MonthType`](doc:MonthType)에 따른 날짜 배열을 반환하는 함수입니다.
-    func days(from type: MonthType) -> [Int] {
+    /// [`CalendarDirection`](doc:CalendarDirection)에 따른 날짜 배열을 반환하는 함수입니다.
+    func days(from type: CalendarDirection) -> [Int] {
         switch type {
-        case .previos:
-            guard let previosMonth = Calendar.current.date(byAdding: .month, value: type.value, to: currentMonthDate) else { return [] }
-            return calendarDaysOfMonth(from: previosMonth)
+        case .previous:
+            guard let previousMonth = Calendar.current.date(byAdding: .month, value: type.value, to: currentMonthDate) else { return [] }
+            return calendarDaysOfMonth(from: previousMonth)
         case .current:
             return calendarDaysOfMonth(from: currentMonthDate)
         case .next:
@@ -157,45 +149,16 @@ class CalendarViewModel: ObservableObject {
         }
     }
     /// 주어진 날짜가 오늘인지 여부를 반환합니다.
-    func isToday(_ day: Int) -> Bool {
-        let calendar = Calendar.current
-        let now = Date()
-
-        var components = calendar.dateComponents([.year, .month], from: currentMonthDate)
-        components.day = day
-
-        guard let targetDate = calendar.date(from: components) else {
-            return false
-        }
-
-        return calendar.isDate(now, inSameDayAs: targetDate)
+    func isToday(_ date: Date) -> Bool {
+        return Calendar.current.isDate(Date.now, inSameDayAs: date)
     }
     /// 주어진 날짜가 선택한 날짜인지 여부를 반환합니다.
-    func isSelectedDay(_ day: Int) -> Bool {
-        let calendar = Calendar.current
-
-        var components = calendar.dateComponents([.year, .month], from: currentMonthDate)
-        components.day = day
-
-        guard let targetDate = calendar.date(from: components) else {
-            return false
-        }
-
-        return calendar.isDate(selectedDate, inSameDayAs: targetDate)
+    func isSelectedDay(on date: Date) -> Bool {
+        return Calendar.current.isDate(selectedDate, inSameDayAs: date)
     }
     /// 주어진 날짜가 오늘보다 미래인지 여부를 반환합니다.
-    func isFutureDay(_ day: Int) -> Bool {
-        let calendar = Calendar.current
-        let now = Date()
-
-        var components = calendar.dateComponents([.year, .month], from: currentMonthDate)
-        components.day = day
-
-        guard let targetDate = calendar.date(from: components) else {
-            return false
-        }
-
-        return targetDate > now
+    func isFutureDate(_ date: Date) -> Bool {
+        return date > Date.now
     }
     /// 현재 달보다 이전인지 확인하는 함수입니다.
     func isBeforeCurrentMonth() -> Bool {

@@ -99,12 +99,13 @@ struct CalendarView: View {
                             calendarVM: calendarVM,
                             days: calendarVM.months[index],
                             writtenDates: writtenDates,
-                            primaryColor: primaryColor
+                            primaryColor: primaryColor,
+                            direction: CalendarDirection(rawValue: index) ?? .current
                         )
                         .tag(index)
                         .onDisappear {
                             if selection == 0 {
-                                calendarVM.changeMonth(by: .previos)
+                                calendarVM.changeMonth(by: .previous)
                             }
                             
                             if selection == 2 {

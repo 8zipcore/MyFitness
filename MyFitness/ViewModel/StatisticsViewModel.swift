@@ -1,11 +1,7 @@
 import SwiftUI
 
-enum CalendarDirection {
-    case previous
-    case next
-}
-
 final class StatisticsViewModel: ObservableObject {
+ 
     @Published var periodTimes: [PeriodTime] = []
     @Published var anaerobicCounts: [ExerciseCount] = []
     @Published var cardioCounts: [ExerciseCount] = []
