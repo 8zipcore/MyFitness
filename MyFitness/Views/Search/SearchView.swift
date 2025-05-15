@@ -40,9 +40,6 @@ struct SearchView: View {
                         }
                     }
                 }
-                .onAppear {
-                    searchVM.loadRetrospects(from: context)
-                }
                 .listRowSeparator(.hidden)
                 .padding(.vertical, 6)
                 // 아이템 누르면 저장 뜨고 카테고리 누르고 누르면 삭제수정 뜨는 issue
@@ -91,9 +88,14 @@ struct SearchView: View {
                     .tint(.primary)
                 }
             }
-            
-
         }
+        .onChange(of: retrospects, { _, _ in
+            updateData()
+        })
+        .onAppear {
+            updateData()
+        }
+        
         Menu {
             ForEach(SearchViewModel.SortOption.allCases) { option in
                 Button {
@@ -110,6 +112,13 @@ struct SearchView: View {
                 .clipShape(Capsule())
         }
         .padding(.horizontal)
+    }
+}
+
+extension SearchView {
+    private func updateData() {
+        searchVM.loadRetrospects(from: context)
+        searchVM.fetchSortedList()
     }
 }
 
