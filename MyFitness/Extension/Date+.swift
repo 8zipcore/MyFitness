@@ -35,6 +35,15 @@ extension Date {
 
         return calendar.date(from: components) ?? self
     }
+    
+    func weeksInMonth() -> Int {
+        let calendar = Calendar.current
+        guard let interval = calendar.dateInterval(of: .month, for: self),
+              let lastDay = calendar.date(byAdding: .day, value: -1, to: interval.end) else {
+            return 0
+        }
+        return calendar.component(.weekOfMonth, from: lastDay)
+    }
 }
 
 func isSameYearAndMonth(_ lhs: Date, _ rhs: Date) -> Bool {

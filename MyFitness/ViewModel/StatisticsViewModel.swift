@@ -297,20 +297,22 @@ extension StatisticsViewModel {
     func fetchWorkoutTimesForMonth(from retrospects: [Retrospect]) -> [WorkoutTimeData] {
         var workoutTimeDatas: [WorkoutTimeData] = []
 
-        var monthWorkoutTimes: [Int: [Int]] = [:]
-
+        var weekWorkoutTimes: [Int: [Int]] = [:]
+        
         // 선택된 날짜와 같은 연도, 같은 월일때
         retrospects.forEach {
             if isSameYearAndMonth($0.date, selectedDate) {
-                let month = Calendar.current.component(.month, from: selectedDate) // TODO: 달 데이터 가져오기 (활용 예정)
-                monthWorkoutTimes[month, default: []].append(Int($0.finishTime.timeIntervalSince($0.startTime)) / 60)
+                let week = Calendar.current.component(.weekOfMonth, from: $0.date) // TODO: 달 데이터 가져오기 (활용 예정)
+                weekWorkoutTimes[week, default: []].append(Int($0.finishTime.timeIntervalSince($0.startTime)) / 60)
             }
         }
+        
+        let lastWeeks = selectedDate.weeksInMonth()
 
-        for index in 1...12 {
-            var workoutTimeData = WorkoutTimeData(week: "\(index)월", time: 0)
+        for index in 1...lastWeeks {
+            var workoutTimeData = WorkoutTimeData(week: "\(index)주", time: 0)
 
-            if let times = monthWorkoutTimes[index] {
+            if let times = weekWorkoutTimes[index] {
                 workoutTimeData.time = times.reduce(0, +) / times.count
             }
 
