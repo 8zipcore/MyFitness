@@ -110,7 +110,7 @@ struct MainView: View {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 HStack(spacing: 5) {
                     NavigationLink {
-                        StatisticsView()
+                        StatisticsView(backgroundColor: backgroundColor)
                     } label: {
                         Circle()
                             .fill(toolBarBackgroundColor)
