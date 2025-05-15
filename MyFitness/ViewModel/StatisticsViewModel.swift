@@ -11,7 +11,7 @@ final class StatisticsViewModel: ObservableObject {
     @Published var exerciseDayCount: Int = 0
     @Published var totalSatisfaction: Double = 0.0
     @Published var categoryCountDict: [Category: Int] = [:]
-    @Published var totalCategoryCount: Int = 0 // 비율로 계산해야 하기 때문에 Double
+    @Published var totalCategoryCount: Int = 0
 
     @Published var weekOrMonth: WeekOrMonth = .week
     @Published var showAnaerobicAll: Bool = false
@@ -106,7 +106,7 @@ extension StatisticsViewModel {
     /// Category의 총 개수를 저장합니다.
     /// - Parameter retrospects: 날짜에 맞게 필터링된 회고 데이터 스키마를 받습니다.
     private func setTotalCategoryCount(retrospects: [Retrospect]) {
-        self.totalCategoryCount = retrospects.map { $0.category.count }.count
+        self.totalCategoryCount = retrospects.map { $0.category.count }.reduce(0, +)
     }
 
     /// 오전, 오후, 새벽에 따른 시간을 저장합니다.
