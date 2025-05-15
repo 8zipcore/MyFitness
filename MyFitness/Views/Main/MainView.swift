@@ -43,6 +43,13 @@ struct MainView: View {
                 
                 Group {
                     if let retrospect = retrospect { // 운동 기록 있으면
+                        CommentsItemView(
+                            date: calendarVM.selectedDate.toString(),
+                            comments: retrospect.writing,
+                            textColor: primaryColor
+                        )
+                        .contentShape(Rectangle())
+                        .onTapGesture { isPresented = true }
                         
                         if !retrospectVM.isWorkoutDataEmpty(from: retrospect) {
                             WorkoutItemView(
@@ -52,46 +59,12 @@ struct MainView: View {
                             .contentShape(Rectangle())
                             .onTapGesture { isPresented = true }
                         }
-                        
-                        CommentsItemView(
-                            date: calendarVM.selectedDate.toString(),
-                            comments: retrospect.writing,
-                            textColor: primaryColor
-                        )
-                        .contentShape(Rectangle())
-                        .onTapGesture { isPresented = true }
                     } else { // 운동 기록 없으면
                         CommentsItemView(
                             date: calendarVM.selectedDate.toString(),
                             comments: "운동 기록을 추가해주세요.",
                             textColor: primaryColor
                         )
-                    }
-                    
-                    if !calendarVM.isAfterCurrentMonth() {
-                        HStack {
-                            // 현재 달보다 선택된 날짜가 이전이면
-                            let title = calendarVM.isBeforeCurrentMonth() ? "\(calendarVM.selectedDateMonth)월 운동 횟수" : "이번 달 운동 횟수"
-                            
-                            Text(title)
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(primaryColor)
-                            
-                            Spacer()
-                            
-                            let retropsectCount = retrospectVM.retropsectCount(
-                                from: calendarVM.selectedDate,
-                                writtenDates: retrospectVM.writtenDates(
-                                    from: retrospects
-                                )
-                            )
-                            
-                            Text("\(String(retropsectCount))회")
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(primaryColor)
-                        }
                     }
                 }
                 .padding(.vertical, 20)
@@ -100,7 +73,7 @@ struct MainView: View {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(itemViewBackgroundColor)
                 )
-                .padding(.top, 20)
+                .padding(.top, 5)
                 .padding(.horizontal, 30)
 
                 Spacer()
