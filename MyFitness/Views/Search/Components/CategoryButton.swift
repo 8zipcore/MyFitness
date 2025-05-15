@@ -44,7 +44,6 @@ struct CategoryButton: View {
                 .padding(.horizontal, 15)
             
         }
-//        .buttonStyle(.borderedProminent)
         .background {
             RoundedRectangle(cornerRadius: 15)
                 .fill(backgroundColor)

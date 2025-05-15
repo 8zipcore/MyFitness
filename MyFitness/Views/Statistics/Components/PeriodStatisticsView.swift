@@ -8,6 +8,7 @@
 import SwiftUI
 import Charts
 
+/// 운동 시간 분석 컴포넌트
 struct PeriodStatisticsView: View {
     @ObservedObject var viewModel: StatisticsViewModel
     var body: some View {

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// 주/월로 운동 횟수를 알려주는 컴포넌트
 struct ExerciseDayView: View {
     @ObservedObject var viewModel: StatisticsViewModel
     var body: some View {

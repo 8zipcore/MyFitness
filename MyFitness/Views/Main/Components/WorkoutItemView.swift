@@ -7,8 +7,8 @@
 
 import SwiftUI
 
+/// 세부 운동을 보여줄 컴포넌트
 struct WorkoutItemView: View {
-    
     let workoutItems: [WorkoutItem]
     let textColor: Color
     

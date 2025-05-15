@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// 달력내부 날짜 그리드 컴포넌트
 struct CalendarGridView: View {
     
     @Environment(\.colorScheme) private var colorScheme

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// 만족도 평균 컴포넌트
 struct SatisfactionAverageView: View {
     @ObservedObject var viewModel: StatisticsViewModel
 
@@ -39,6 +40,7 @@ struct SatisfactionAverageView: View {
     }
 }
 
+/// 반원형 크기의 Shape
 struct SemiCircleShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()

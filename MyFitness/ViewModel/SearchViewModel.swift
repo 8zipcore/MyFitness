@@ -8,12 +8,17 @@
 import Foundation
 import SwiftData
 
-
+/// 검색화면에서 사용하는 데이터를 관리하는 ViewModel입니다.
 final class SearchViewModel: ObservableObject {
+    /// 입력받은 문자열을 저장합니다.
     @Published var keyword: String = ""
+    /// 선택된 카테고리를 Set에 저장합니다.
     @Published var selectedCategories: Set<Category> = []
+    /// 북마크가 표시되어 있는지 저장합니다.
     @Published var showOnlyBookmarks: Bool
+	/// 정렬 옵션을 저장합니다.
     @Published var selectedSort: SortOption = .dateDesc
+    /// 회고 데이터를 저장하는 배열입니다.
     @Published var retrospects: [Retrospect] = []
 
     init() {
@@ -24,16 +29,13 @@ final class SearchViewModel: ObservableObject {
         self.retrospects = []
     }
     
-    /// 필터링 해서 표시해줄 배열입니다
+    /// 필터링 해서 표시해줄 회고 데이터 배열입니다.
     var filteredRetrospects: [Retrospect] {
         let filtered = retrospects.filter { restro in
-            /// 검색 키워드
             let matchesKeyword = keyword.isEmpty || restro.writing.lowercased().contains(keyword.lowercased())
-            /// 카테고리
             let matchesCategory = selectedCategories.isEmpty || selectedCategories.contains {
                 restro.category.contains($0)
             }
-            /// 북마크
             let matchesBookmark = !showOnlyBookmarks || restro.bookMark
             
             return matchesKeyword && matchesCategory && matchesBookmark
@@ -41,7 +43,8 @@ final class SearchViewModel: ObservableObject {
         
         return filtered
     }
-    /// 리스트를 sort 해서 표시해줄 배열입니다.
+
+    /// 리스트를 정렬 해서 표시해줄 배열입니다.
     var sortedAndFiltered: [Retrospect] {
         let list = filteredRetrospects
         var newList: [Retrospect] = []
@@ -64,7 +67,8 @@ final class SearchViewModel: ObservableObject {
         return newList
     }
     
-    /// 데이터를 가져와서 retrospect 배열에 넣습니다
+    /// 데이터를 가져와서 회고 데이터 배열에 넣습니다.
+    /// - Parameter context: 데이터 관리를 위한 대리자를 받습니다.
     func loadRetrospects(from context: ModelContext) {
             /// 기본 정렬 날짜 내림차순(최신순)
             let descriptor = FetchDescriptor<Retrospect>(
@@ -75,13 +79,19 @@ final class SearchViewModel: ObservableObject {
             self.retrospects = results
         }
 
-    /// 북마크 토글입니다
+    /// 북마크를 토글합니다.
+    /// - Parameters:
+    ///   - item: 북마크로 설정하거나 제거할 회고 데이터를 받습니다.
+    ///   - context: 데이터 관리를 위한 대리자를 받습니다.
     func toggleBookmark(_ item: Retrospect, context: ModelContext) {
         item.bookMark.toggle()
         try? context.save()
     }
 
-    /// 회고록 삭제입니다
+    /// 회고 데이터를 삭제합니다.
+    /// - Parameters:
+    ///   - item: 영구적으로 삭제할 회고 데이터를 받습니다.
+    ///   - context: 데이터 관리를 위한 대리자를 받습니다.
     func delete(_ item: Retrospect, context: ModelContext) {
         context.delete(item)
         do {
@@ -93,19 +103,9 @@ final class SearchViewModel: ObservableObject {
     }
 
     
-    /// 최대 무게를 리턴합니다
+    /// 최대 무게를 반환합니다.
+    /// - Parameter restro: 최대 무게를 확인할 회고 데이터입니다.
     private func maxWeight(_ restro: Retrospect) -> Int {
         restro.anaerobics.map { $0.weight }.max() ?? 0
-    }
-
-    /// 정렬에 쓰이는 요소들 열거입니다
-    enum SortOption: String, CaseIterable, Identifiable {
-        case dateDesc = "최신 순"
-        case dateAsc = "오래된 순"
-        case satisfactionDesc = "만족도 높은 순"
-        case satisfactionAsc = "만족도 낮은 순"
-        case weightDesc = "무게 높은 순"
-        case weightAsc = "무게 낮은 순"
-        var id: String { rawValue }
     }
 }

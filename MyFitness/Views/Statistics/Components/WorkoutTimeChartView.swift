@@ -44,6 +44,6 @@ struct WorkoutTimeChartView: View {
     }
 }
 
-#Preview {
-    WorkoutTimeChartView(viewModel: StatisticsViewModel(), retrospects: exampleList, weekOrMonth: .month)
-}
+//#Preview {
+//    WorkoutTimeChartView(viewModel: StatisticsViewModel(), retrospects: Retro,weekOrMonth: .month)
+//}

@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-// 검색뷰
+/// 검색 화면
 struct SearchView: View {
     @Environment(\.modelContext) var context
     @Environment(\.horizontalSizeClass) var horizontalSizeClass

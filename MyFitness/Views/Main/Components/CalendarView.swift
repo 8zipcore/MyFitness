@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 
+// 달력을 보여줄 화면
 struct CalendarView: View {
     @Environment(\.colorScheme) private var colorScheme
     

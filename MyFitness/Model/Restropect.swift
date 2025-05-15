@@ -1,10 +1,3 @@
-//
-//  Retrospect.swift
-//  MyFitness
-//
-//  Created by 강대훈 on 5/12/25.
-//
-
 import Foundation
 import SwiftData
 

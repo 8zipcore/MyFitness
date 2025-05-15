@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// 회고 코멘트를 보여줄 컴포넌트
 struct CommentsItemView: View {
     
     let date: String

@@ -1,8 +1,10 @@
+/// 운동 시간대별 횟수를 기록하는 객체
 struct PeriodTime {
     var period: Period
     var count: Int
 }
 
+/// 시간대별로 정의한 객체
 enum Period: String, CaseIterable {
     case morning = "오전"
     case dayTime = "오후"

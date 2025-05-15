@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// 회고 추가를 할 수 있도록하는 컴포넌트
 struct CircleButton: View {
     
     enum ButtonType: String {

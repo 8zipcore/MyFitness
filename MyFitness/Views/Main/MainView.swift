@@ -8,8 +8,8 @@
 import SwiftUI
 import SwiftData
 
+/// 메인 화면
 struct MainView: View {
-
     @Environment(\.colorScheme) private var colorScheme
 
     @StateObject private var retrospectVM = RetrospectViewModel()
@@ -98,8 +98,6 @@ struct MainView: View {
             }
         }
         .sheet(isPresented: $isPresented) {
-            // CircleButton -> 생성, retrospect -> 뭐 들어가지?
-            // Contents -> 수정
             NavigationStack {
                 RetrospectView(retrospect: retrospect, date: calendarVM.selectedDate)
             }

@@ -1,22 +1,37 @@
 import SwiftUI
 
+/// 통계 데이터를 관리하는 VIewModel입니다.
 final class StatisticsViewModel: ObservableObject {
+    /// 오전, 오후, 새벽시간으로 나눠서 보관하는 배열입니다.
     @Published var periodTimes: [PeriodTime] = []
+    /// 무산소 세부운동별 횟수를 보관하는 배열입니다.
     @Published var anaerobicCounts: [ExerciseCount] = []
+    /// 유산소 세부운동별 횟수를 보관하는 배열입니다.
     @Published var cardioCounts: [ExerciseCount] = []
+    /// 무산소 세부운동 총 횟수를 보관하는 배열입니다.
     @Published var anaerobicTotalCount: Int = 0
+    /// 유산소 세부운동 총 횟수를 보관하는 배열입니다.
     @Published var cardioTotalCount: Int = 0
+    /// 무산소 세부운동 중에서 가장 많은 횟수를 저장합니다.
     @Published var anaerobicMaxCount: Int = 0
+    /// 유산소 세부운동 중에서 가장 많은 횟수를 저장합니다.
     @Published var cardioMaxCount: Int = 0
+    /// 운동한 총 날짜를 저장합니다.
     @Published var exerciseDayCount: Int = 0
+    /// 총 만족도를 평균으로 내서 저장합니다.
     @Published var totalSatisfaction: Double = 0.0
+    /// 카테고리 별로 선택된 횟수를 보관하는 딕셔너리입니다.
     @Published var categoryCountDict: [Category: Int] = [:]
+    /// 선택된 모든 카테고리의 횟수를 저장합니다.
     @Published var totalCategoryCount: Int = 0
-
+	/// 현재 통계가 주 단위인지, 월 단위인지 저장합니다.
     @Published var weekOrMonth: WeekOrMonth = .week
+    /// 통계화면에서 무산소 세부운동의 "더보기" 버튼이 눌렸는지에 대한 상태를 저장합니다.
     @Published var showAnaerobicAll: Bool = false
+    /// 통계화면에서 유산소 세부운동의 "더보기" 버튼이 눌렸는지에 대한 상태를 저장합니다.
     @Published var showCardioAll: Bool = false
 
+    /// 변경된 날짜를 저장합니다.
     @Published var selectedDate: Date = .now
 
     /// 만족도에 따른 컬러 반환 계산 속성입니다.
@@ -196,6 +211,8 @@ extension StatisticsViewModel {
 /// 날짜 관련
 extension StatisticsViewModel {
     /// 날짜를 String으로 변환하는 함수입니다.
+    /// - Parameter type: 월단위인지, 주단위인지에 대한 데이터를 받습니다.
+    /// - Returns: 날짜의 범위를 String으로 반환합니다.
     func dateToString(type: WeekOrMonth) -> String {
         let calendar = Calendar.current
 
@@ -228,6 +245,9 @@ extension StatisticsViewModel {
         }
     }
     /// selectedDate를 변환해주는 함수입니다.
+    /// - Parameters:
+    ///   - type: 월단위인지, 주단위인지에 대한 데이터를 받습니다.
+    ///   - direction: 이전 날짜를 눌렀는지, 이후 날짜를 눌렀는지에 대한 데이터를 받습니다.
     func changeDate(type: WeekOrMonth, direction: CalendarDirection) {
         let calendar = Calendar.current
 
@@ -241,6 +261,8 @@ extension StatisticsViewModel {
         }
     }
     /// 선택한 날짜와 현재 날짜의 동일여부를 반환해주는 함수입니다.
+    /// - Parameter type: 월단위인지, 주단위인지에 대한 데이터를 받습니다.
+    /// - Returns: 동일여부에 따라서 Bool값이 반환됩니다.
     func isCurrent(type: WeekOrMonth) -> Bool {
         let calendar = Calendar.current
 
@@ -265,7 +287,11 @@ extension StatisticsViewModel {
 
 /// 운동 시간 관련
 extension StatisticsViewModel {
-    /// 운동시간 데이터를 반환합니다.
+    /// 데이터와 월/주 단위에 따른 운동시간 데이터를 반환합니다.
+    /// - Parameters:
+    ///   - retrospects: 회고 데이터를 전달받습니다.
+    ///   - type: 월단위인지, 주단위인지에 대한 데이터를 받습니다.
+    /// - Returns: 운동시간 데이터를 배열로 반환합니다.
     func workoutTimes(from retrospects: [Retrospect], type: WeekOrMonth) -> [WorkoutTimeData] {
         switch type {
         case .week:
@@ -274,7 +300,11 @@ extension StatisticsViewModel {
             fetchWorkoutTimesForMonth(from: retrospects)
         }
     }
+
     /// 주별 운동시간 데이터를 반환합니다.
+    /// - Parameters:
+    ///   - retrospects: 회고 데이터를 전달받습니다.
+    /// - Returns: 운동시간 데이터를 배열로 반환합니다.
     func fetchWorkoutTimesForWeeks(from retrospects: [Retrospect]) -> [WorkoutTimeData] {
         var workoutTimeDatas: [WorkoutTimeData] = []
 
@@ -294,15 +324,16 @@ extension StatisticsViewModel {
         return workoutTimeDatas
     }
     /// 월별 운동시간 데이터를 반환합니다.
+    /// - Parameter retrospects: 회고 데이터를 전달받습니다.
+    /// - Returns: 운동시간 데이터를 배열로 반환합니다.
     func fetchWorkoutTimesForMonth(from retrospects: [Retrospect]) -> [WorkoutTimeData] {
         var workoutTimeDatas: [WorkoutTimeData] = []
 
         var weekWorkoutTimes: [Int: [Int]] = [:]
-        
-        // 선택된 날짜와 같은 연도, 같은 월일때
+
         retrospects.forEach {
             if isSameYearAndMonth($0.date, selectedDate) {
-                let week = Calendar.current.component(.weekOfMonth, from: $0.date) // TODO: 달 데이터 가져오기 (활용 예정)
+                let week = Calendar.current.component(.weekOfMonth, from: $0.date)
                 weekWorkoutTimes[week, default: []].append(Int($0.finishTime.timeIntervalSince($0.startTime)) / 60)
             }
         }
@@ -320,7 +351,9 @@ extension StatisticsViewModel {
         }
         return workoutTimeDatas
     }
-    /// 입력받은 Date에 해당하는 주의 모든 Date를 반환하는 함수입니다.
+    /// 파라미터 날짜에 해당하는 주의 모든 Date를 반환하는 함수입니다.
+    /// - Parameter date: 날짜를 전달받습니다.
+    /// - Returns: 해당하는 주에 있는 모든 날짜를 반환합니다.
     func weekDates(for date: Date) -> [Date] {
         let calendar = Calendar.current
 

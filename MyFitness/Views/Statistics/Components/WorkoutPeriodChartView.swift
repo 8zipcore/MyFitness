@@ -8,8 +8,8 @@
 import SwiftUI
 import Charts
 
+/// 운동한 시간대를 Bar Chart로 보여주는 컴포넌트
 struct WorkoutPeriodChartView: View {
-    
     @ObservedObject var statisticsVM: StatisticsViewModel
     
     var body: some View {

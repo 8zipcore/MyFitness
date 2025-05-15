@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// 날짜를 알려주는 컴포넌트
 struct TitleView: View {
     @Environment(\.colorScheme) private var colorScheme
     

@@ -1,12 +1,18 @@
 import SwiftUI
 import SwiftData
 
-/// 회고 생성, 수정, 삭제 화면의 ViewModel
+/// 회고 생성, 수정, 삭제 화면의 ViewModel입니다.
 final class RetrospectWriteViewModel: ObservableObject {
+    
+    /// CRUD를 진행할 회고 데이터 스키마를 받아옵니다.
     @Published var retrospect: Retrospect
+    /// 운동 시간이 잘못됐는지 확인하기 위해 사용합니다.
     @Published var isInvalidDate: Bool = false
+    /// 운동을 추가하고 운동명을 기입하지 않았는지 확인하기 위해 사용합니다.
     @Published var isInvalidExercise: Bool = false
+    /// 데이터의 삭제를 할건지 확인하기 위해 사용합니다.
     @Published var isDelete: Bool = false
+    /// 모든 카테고리를 나열하기 위해 사용합니다.
     @Published var categoryList: [Category] = Category.allCases
 
     /// 최초 생성시에 사용되는 생성자입니다.

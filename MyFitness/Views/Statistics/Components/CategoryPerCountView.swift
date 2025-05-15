@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// 카테고리별 횟수 컴포넌트
 struct CategoryPerCountView: View {
     @ObservedObject var viewModel: StatisticsViewModel
 
@@ -24,6 +25,7 @@ struct CategoryPerCountView: View {
     }
 }
 
+/// 하나의 카테고리 컴포넌트
 struct CircularView: View {
     @Environment(\.colorScheme) var colorScheme
 
@@ -46,6 +48,7 @@ struct CircularView: View {
     }
 }
 
+/// 원형 프로그레스바를 그려주는 컴포넌트
 struct CircularProgressBarView: View {
     var category: Category
     var progress: Double = 0.0

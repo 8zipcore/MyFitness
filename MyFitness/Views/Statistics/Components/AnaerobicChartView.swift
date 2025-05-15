@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// 무산소 세부운동 통계 컴포넌트
 struct AnaerobicChartView: View {
     
     @ObservedObject var statisticsVM: StatisticsViewModel
@@ -22,7 +23,7 @@ struct AnaerobicChartView: View {
                 .font(.title)
                 .bold()
         }
-        List(showAnaerobicAll ? statisticsVM.anaerobicCounts : Array(statisticsVM.anaerobicCounts.prefix(5)), id: \.name) { exercise in // 무산소 세부 운동 이름과, 횟수를 가져와야 합니당
+        List(showAnaerobicAll ? statisticsVM.anaerobicCounts : Array(statisticsVM.anaerobicCounts.prefix(5)), id: \.name) { exercise in
             NavigationLink {
                 
             } label: {
@@ -31,7 +32,6 @@ struct AnaerobicChartView: View {
                         Text("\(exercise.name)")
                             .font(.callout)
                         HStack {
-                            // TODO: 최대 개수 구해서 하기, 정렬
                             ProgressView(value: Double(exercise.count), total: 2)
                                 .accentColor(.blue)
                                 .background(.clear)

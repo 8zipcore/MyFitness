@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// 유산소 세부 운동 컴포넌트
 struct CardioChartView: View {
     
     @ObservedObject var statisticsVM: StatisticsViewModel
@@ -31,7 +32,6 @@ struct CardioChartView: View {
                         Text("\(exercise.name)")
                             .font(.callout)
                         HStack {
-                            // TODO: 최대 개수 구해서 하기, 정렬
                             ProgressView(value: Double(exercise.count), total: 2)
                                 .accentColor(.blue)
                                 .background(.clear)
