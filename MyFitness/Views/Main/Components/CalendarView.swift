@@ -119,6 +119,9 @@ struct CalendarView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(height: 250)
+                .onChange(of: calendarVM.currentMonthDate) { oldValue, newValue in
+                    updateSelectedDate()
+                }
             }
             .overlay {
                 if showDatePicker {
@@ -145,12 +148,23 @@ struct CalendarView: View {
                         RoundedRectangle(cornerRadius: 10)
                             .fill(datePickerBackgroundColor)
                     )
-                    .onChange(of: selectedYear) { calendarVM.changeYear($0) }
-                    .onChange(of: selectedMonth) { calendarVM.changeMonth($0) }
+                    .onChange(of: selectedYear) { oldValue, newValue in
+                        calendarVM.changeYear(newValue)
+                    }
+                    .onChange(of: selectedMonth) { oldValue, newValue in
+                        calendarVM.changeMonth(newValue)
+                    }
                 }
             }
         }
         .padding(.horizontal, 30)
+    }
+}
+
+extension CalendarView {
+    private func updateSelectedDate() {
+        selectedYear = Calendar.current.component(.year, from: calendarVM.currentMonthDate)
+        selectedMonth = Calendar.current.component(.month, from: calendarVM.currentMonthDate)
     }
 }
 
