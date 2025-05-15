@@ -16,16 +16,14 @@ class RetrospectViewModel: ObservableObject {
         
         retrospect.anaerobics.forEach { anaerobic in
             let title = anaerobic.name
-            // TODO: 0회 이상인 경우만 출력
-            let contents = "\(anaerobic.weight)kg \(anaerobic.count)회"
-//            let contents = "\(anaerobic.weight)kg \(anaerobic.count)회 \(anaerobic.set)세트"
+            let contents = "\(anaerobic.weight)kg \(anaerobic.count)회 \(anaerobic.set)세트"
             
             workoutItems.append(WorkoutItem(title: title, contents: contents))
         }
         
         retrospect.cardios.forEach { cardio in
             let title = cardio.name
-            // TODO: 0분 이상인 경우만 출력
+            
             let contents = "\(cardio.minutes)분"
             
             workoutItems.append(WorkoutItem(title: title, contents: contents))

@@ -101,8 +101,6 @@ struct SearchView: View {
                         RetrospectView(retrospect: retrospect, date: modalDate)
                     }
                 }
-                //            .searchable(text: $searchVM.keyword, prompt: "운동 기록을 검색하세요")
-                //            .searchable(text: $searchVM.keyword, placement: horizontalSizeClass == .compact ? .navigationBarDrawer(displayMode: .always) : .navigationBarDrawer(displayMode: .always), prompt: "운동 기록을 검색하세요")
                 .searchable(text: $searchVM.keyword, placement: .navigationBarDrawer(displayMode: .always), prompt: "운동 기록을 검색하세요")
                 .navigationTitle("검색")
                 .toolbar {

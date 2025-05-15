@@ -46,6 +46,7 @@ struct TitleView: View {
             }
         }
         .padding(.horizontal, 25)
+        .padding(.vertical, 10)
     }
 }
 
