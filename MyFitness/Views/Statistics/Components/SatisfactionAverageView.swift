@@ -20,11 +20,11 @@ struct SatisfactionAverageView: View {
             ZStack {
                 /// 배경 반원
                 SemiCircleShape()
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 20)
+                    .stroke(Color.gray.opacity(0.3), style: StrokeStyle(lineWidth: 20, lineCap: .round))
 
                 /// 진행 반원
                 SemiCircleShape()
-                    .trim(from: 0, to: viewModel.totalSatisfaction / 100)
+                    .trim(from: 0, to: viewModel.totalSatisfaction.isNaN ? 0.0 : viewModel.totalSatisfaction / 100)
                     .stroke(viewModel.satisfactionColor, style: StrokeStyle(lineWidth: 20, lineCap: .round))
                     .animation(.easeInOut, value: viewModel.totalSatisfaction / 100)
 
