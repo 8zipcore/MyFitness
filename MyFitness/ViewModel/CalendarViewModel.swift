@@ -34,7 +34,7 @@ class CalendarViewModel: ObservableObject {
     /// 캘린더에서 사용자가 선택한 날짜를 나타내며,
     /// 이 값을 기준으로 회고 데이터를 필터링합니다.
     @Published var selectedDate: Date
-    // 달력에 표시되는 날짜입니다.
+    /// 달력에 표시되는 날짜입니다.
     @Published var currentMonthDate: Date
     /// 이전 달, 현재 달, 다음 달의 값을 포함한 배열입니다.
     ///
