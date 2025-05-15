@@ -16,10 +16,8 @@ struct CategoryPerCountView: View {
             .foregroundStyle(.gray)
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
-                ForEach(Category.allCases, id: \.self) { category in
-                    let count = viewModel.getCategoryCount(retrospects: exampleList, category: category)
-                    let totalCount = viewModel.getTotalCategoryCount(retrospects: exampleList)
-                    CircularView(category: category, count: count, totalCount: totalCount)
+                ForEach(viewModel.getSortedCategoryList(), id: \.0) { item in
+                    CircularView(category: item.0, count: item.1, totalCount: Double(viewModel.totalCategoryCount))
                 }
             }
         }
