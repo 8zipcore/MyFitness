@@ -12,19 +12,19 @@ import SwiftData
 struct SearchView: View {
     @Environment(\.modelContext) var context
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    
+
     @StateObject private var searchVM = SearchViewModel()
-    
+
     @State private var selectedRetrospect: Retrospect? = nil
     @State private var modalDate = Date()
-    
-    
+
+
     @Query
     var retrospects: [Retrospect]
-    
+
     let backgroundColor: Color
     let itemViewBackgroundColor: Color
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -33,14 +33,14 @@ struct SearchView: View {
                         HStack {
                             ForEach(0..<Category.allCases.count, id: \.self) { index in
                                 let category = Category.allCases[index]
-                                
+
                                 CategoryButton(category: category, isSelected: searchVM.selectedCategories.contains(category), toggleAction: {
                                     if searchVM.selectedCategories.contains(category) {
                                         searchVM.selectedCategories.remove(category)
                                     } else {
                                         searchVM.selectedCategories.insert(category)
                                     }
-                                    
+
                                     updateData()
                                 })
                                 .padding(.leading, index == 0 ? 15 : 0)
@@ -52,12 +52,12 @@ struct SearchView: View {
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(backgroundColor)
-                    
+
                     // 아이템 누르면 저장 뜨고 카테고리 누르고 누르면 삭제수정 뜨는 issue
-                    
+
                     ForEach(searchVM.sortedAndFiltered.indices, id:\.self) { index in
                         let item = searchVM.sortedAndFiltered[index]
-                        
+
                         ListItemView(
                             item: item,
                             itemViewBackgroundColor: itemViewBackgroundColor,
@@ -80,7 +80,7 @@ struct SearchView: View {
                             .swipeActions(edge: .trailing) { // 왼쪽으로 스와이프해서 삭제
                                 Button(role: .destructive) {
                                     searchVM.delete(item, context: context)
-                                    
+
                                 } label: {
                                     Image(systemName: "trash")
                                 }
@@ -126,7 +126,7 @@ struct SearchView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            
+
             Menu {
                 ForEach(SearchViewModel.SortOption.allCases) { option in
                     Button {
