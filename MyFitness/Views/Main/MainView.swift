@@ -152,7 +152,7 @@ struct MainView: View {
                     }
 
                     NavigationLink {
-                        SearchView()
+                        SearchView(backgroundColor: backgroundColor, itemViewBackgroundColor: itemViewBackgroundColor)
                     } label: {
                         Circle()
                             .fill(toolBarBackgroundColor)
