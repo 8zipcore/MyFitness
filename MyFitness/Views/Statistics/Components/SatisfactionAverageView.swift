@@ -25,10 +25,10 @@ struct SatisfactionAverageView: View {
                 /// 진행 반원
                 SemiCircleShape()
                     .trim(from: 0, to: viewModel.totalSatisfaction / 100)
-                    .stroke(Color.green, style: StrokeStyle(lineWidth: 20, lineCap: .round))
+                    .stroke(viewModel.satisfactionColor, style: StrokeStyle(lineWidth: 20, lineCap: .round))
                     .animation(.easeInOut, value: viewModel.totalSatisfaction / 100)
 
-                Text("\(Int(viewModel.totalSatisfaction))%")
+                Text("\(viewModel.totalSatisfaction.isNaN ? 0 : Int(viewModel.totalSatisfaction))%")
                     .font(.title)
                     .bold()
                     .offset(y: 20)

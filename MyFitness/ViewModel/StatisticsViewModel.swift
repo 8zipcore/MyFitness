@@ -19,6 +19,20 @@ final class StatisticsViewModel: ObservableObject {
 
     @Published var selectedDate: Date = .now
 
+    /// 만족도에 따른 컬러 반환 계산 속성입니다.
+    var satisfactionColor: Color {
+        switch totalSatisfaction {
+        case 0...33:
+            return .red
+        case 34...66:
+            return .yellow
+        case 67...100:
+            return .green
+        default:
+            return .green
+        }
+    }
+
     /// 해당 주의 첫 번째 요일로 초기화합니다.
     init() {
         if let startDate = Calendar.current.dateInterval(of: .weekOfYear, for: .now)?.start {
@@ -122,13 +136,13 @@ extension StatisticsViewModel {
     /// 무산소 세부 운동 총 횟수를 저장합니다.
     /// - Parameter retrospects: 날짜에 맞게 필터링된 회고 데이터 스키마를 받습니다.
     private func setAnaerobicTotalCount(retrospects: [Retrospect]) {
-        self.anaerobicTotalCount = retrospects.map { $0.anaerobics.map { $0.name }.count }.count
+        self.anaerobicTotalCount = retrospects.map { $0.anaerobics.count }.reduce(0, +)
     }
 
     /// 유산소 세부 운동 총 횟수를 저장합니다.
     /// - Parameter retrospects: 날짜에 맞게 필터링된 회고 데이터 스키마를 받습니다.
     private func setCardioTotalCount(retrospects: [Retrospect]) {
-        self.cardioTotalCount = retrospects.map { $0.cardios.map { $0.name }.count }.count
+        self.cardioTotalCount = retrospects.map { $0.cardios.count }.reduce(0, +)
     }
 
     /// 무산소 세부 운동 별로 리스트를 저장합니다.
