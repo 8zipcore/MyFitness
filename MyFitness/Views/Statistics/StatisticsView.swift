@@ -13,7 +13,7 @@ struct StatisticsView: View {
     let backgroundColor: Color
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 0) {
             TitleView(viewModel: viewModel)
             
             Form {
