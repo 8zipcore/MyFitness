@@ -8,9 +8,13 @@
 import SwiftUI
 
 struct TitleView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    
     @ObservedObject var viewModel: StatisticsViewModel
     
     var body: some View {
+        let tintColor: Color = colorScheme == .light ? .black : .white
+        
         HStack(spacing: 0) {
             Button {
                 viewModel.changeDate(type: viewModel.weekOrMonth, direction: .previous)
@@ -18,7 +22,8 @@ struct TitleView: View {
                 Image(systemName: "chevron.backward")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 12, height: 12)
+                    .tint(tintColor)
+                    .frame(width: 16, height: 16)
             }
 
             Text(viewModel.dateToString(type: viewModel.weekOrMonth))
@@ -32,14 +37,15 @@ struct TitleView: View {
                     Image(systemName: "chevron.forward")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 12, height: 12)
+                        .tint(tintColor)
+                        .frame(width: 16, height: 16)
                 }
             } else {
                 Spacer()
                     .frame(width: 20, height: 20)
             }
         }
-        .padding(.horizontal, 30)
+        .padding(.horizontal, 25)
     }
 }
 
