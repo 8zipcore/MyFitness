@@ -152,7 +152,6 @@ struct SearchView: View {
 extension SearchView {
     private func updateData() {
         searchVM.loadRetrospects(from: context)
-        searchVM.fetchSortedList()
     }
 }
 
