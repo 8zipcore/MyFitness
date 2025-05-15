@@ -105,6 +105,22 @@ struct SearchView: View {
                 .navigationTitle("검색")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            ForEach(SearchViewModel.SortOption.allCases) { option in
+                                Button {
+                                    searchVM.selectedSort = option
+                                } label: {
+                                    Label(option.rawValue, systemImage: searchVM.selectedSort == option ? "checkmark" : "")
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                                .foregroundColor(.primary)
+                                .padding(8)
+                        }
+                    }
+                    
+                    ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             searchVM.showOnlyBookmarks.toggle()
                         } label: {
@@ -125,22 +141,6 @@ struct SearchView: View {
                     Text("운동을 기록해 보세요!")
                         .foregroundStyle(.secondary)
                 }
-            }
-            
-            Menu {
-                ForEach(SearchViewModel.SortOption.allCases) { option in
-                    Button {
-                        searchVM.selectedSort = option
-                    } label: {
-                        Label(option.rawValue, systemImage: searchVM.selectedSort == option ? "checkmark" : "")
-                    }
-                }
-            } label: {
-                Label("정렬: \(searchVM.selectedSort.rawValue)", systemImage: "arrow.up.arrow.down")
-                    .foregroundColor(.primary)
-                    .padding(8)
-                    .background(Color(.systemGray5))
-                    .clipShape(Capsule())
             }
         }
         .background(backgroundColor)
