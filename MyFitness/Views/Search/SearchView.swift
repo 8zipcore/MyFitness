@@ -80,6 +80,7 @@ struct SearchView: View {
 //            .searchable(text: $searchVM.keyword, placement: horizontalSizeClass == .compact ? .navigationBarDrawer(displayMode: .always) : .navigationBarDrawer(displayMode: .always), prompt: "운동 기록을 검색하세요")
             .searchable(text: $searchVM.keyword, placement: .navigationBarDrawer(displayMode: .always), prompt: "운동 기록을 검색하세요")
             .listStyle(.plain)
+            
             .navigationTitle("검색")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -89,6 +90,12 @@ struct SearchView: View {
                         Image(systemName: searchVM.showOnlyBookmarks ? "bookmark.fill" : "bookmark")
                     }
                     .tint(.primary)
+                }
+            }
+            .overlay {
+                if searchVM.sortedAndFiltered.isEmpty {
+                    Text("운동을 기록해 보세요!")
+                        .foregroundStyle(.secondary)
                 }
             }
             
