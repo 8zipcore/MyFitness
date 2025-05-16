@@ -40,7 +40,7 @@ Xcode에서 상단의 실행 버튼(▶️)을 클릭하여 시뮬레이터 또�
 ## 2. 화면 설계
 
 <p align="center">
-  <img src="https://velog.velcdn.com/images/findjayu/post/6a2b7617-a2a6-479b-9e12-0cb943fdbaa8/image.png" alt="샘플 이미지" width="800"/>
+  <img src="https://velog.velcdn.com/images/findjayu/post/e018d3d0-0f19-4e41-9fa6-c6db8b0d740b/image.png" alt="샘플 이미지" width="800"/>
 </p>
 
 ## 3. Key Features (주요 기능)
