@@ -37,7 +37,13 @@ Xcode에서 상단의 실행 버튼(▶️)을 클릭하여 시뮬레이터 또�
 - **다크 모드** : 시스템 다크 모드에 자동 대응  
 - **아이패드 지원** : 세로·가로 방향 모두 최적화된 UI 제공
 
-## 2. Key Features (주요 기능)
+## 2. 화면 설계
+
+<p align="center">
+  <img src="https://velog.velcdn.com/images/findjayu/post/6a2b7617-a2a6-479b-9e12-0cb943fdbaa8/image.png" alt="샘플 이미지" width="800"/>
+</p>
+
+## 3. Key Features (주요 기능)
 
 - **메인화면**
     - 캘린더 UI를 통해 기록한 회고와 운동을 쉽게 확인할 수 있습니다.
@@ -53,7 +59,7 @@ Xcode에서 상단의 실행 버튼(▶️)을 클릭하여 시뮬레이터 또�
 - **통계 화면**
     - 통계 화면을 통해서 다양한 기록과 그래프를 확인할 수 있습니다.
 
-## 3. 프로젝트 구조
+## 4. 프로젝트 구조
 ```plaintext
 /MyFitness
 ├── Assets.xcassets
@@ -95,7 +101,7 @@ Xcode에서 상단의 실행 버튼(▶️)을 클릭하여 시뮬레이터 또�
 <br/>
 
 
-## 4. Tasks & Responsibilities (작업 및 역할 분담)
+## 5. Tasks & Responsibilities (작업 및 역할 분담)
 | 강대훈 | 하재준 | 홍승아 |
 |:------:|:------:|:------:|
 | <img src="https://github.com/user-attachments/assets/e97f2591-de89-4990-96d3-7d6f74ab0e45" alt="강대훈" width="150"> | <img src="https://github.com/user-attachments/assets/860a4008-ca16-48e5-9b15-06815d2dd1e0" alt="하재준" width="150"> | <img src="https://github.com/user-attachments/assets/55458ebd-db5a-445b-8a72-b611f2cc903d" alt="홍승아" width="150"> |
